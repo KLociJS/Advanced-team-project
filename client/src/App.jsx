@@ -20,10 +20,10 @@ import {
 const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path='/' element={<Layout />}>
+        <Route index element={< Home />}/>      
         <Route path='/createvent' element={<CreateEvent />}/>
         <Route path='/dashboard' element={< Dashboard />}/>
         <Route path='/events' element={< Events />}/>
-        <Route path='/home' element={< Home />}/>      
         <Route path='/joinedevents' element={< JoinedEvents/>}/>
         <Route path='/login' element={< Login/>}/>
         <Route path='/signup' element={< Signup/>}/>
