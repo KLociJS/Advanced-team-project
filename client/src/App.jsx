@@ -5,6 +5,8 @@ import {
     RouterProvider,
 } from 'react-router-dom'
 
+import './Layout.css'
+
 import { Layout } from 'Layout'
 
 import {
