@@ -1,15 +1,14 @@
 .search-form{
-    background-color: aquamarine;
     position: absolute;
-    height: 100vh;
+    height: calc(100vh - 60px);
     width: 30%;
 }
 
 .card-container{
-    background-color: bisque;
     width: 70%;
     margin-left: 30%;
-    height: 100vh;
+    overflow-y: scroll;
+    height: calc(100vh - 60px);
 }
 
 .search-button{
