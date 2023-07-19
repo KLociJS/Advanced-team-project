@@ -4,6 +4,7 @@
     max-width: 1300px;
     margin: auto;
     position: relative;
+    min-height: calc(100vh - 60px);
 }
 
 .flex-container {
