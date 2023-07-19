@@ -1,0 +1,67 @@
+.input-group,.password-input {
+    position: relative;   
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.input-control {
+    border: 1px solid #002147;
+    border-radius: 5px;
+    padding: 0.5rem 0.5rem;
+    width: 100%
+}
+
+.input-control:focus{
+    border: 1px solid transparent;
+    outline: 2px solid #FF9900;
+}
+  
+.input-label {
+    position: absolute;
+    top: 7px;
+    left: 5px;
+    transform: translate(0, 0);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: transform 200ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;
+    pointer-events: none;
+}
+  
+.input-label.active {
+    top: -2px;
+    transform: translate(0, -50%);
+    padding: 0 0.2rem;
+    background-color: #FBFBFF;
+    font-size: 0.8rem;
+}
+
+.input-group.error .input-control{
+    border: 1px solid var(--danger);
+}
+.input-group.error .input-label{
+    color: var(--danger);
+}
+
+@media screen and (max-width: 400px) {
+    .input-control {
+        width: 100%
+    }
+}
+
+.react-datepicker-wrapper {
+    display: block !important;
+    margin-top: 1rem;
+}
+.input-control::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--text-primary);
+}
+
+/* Password */
+
+.password-icon{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px
+}
+  

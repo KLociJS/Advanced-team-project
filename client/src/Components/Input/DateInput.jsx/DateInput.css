@@ -1,0 +1,3 @@
+.input-date::-webkit-calendar-picker-indicator {
+    border-radius: 5px;
+}

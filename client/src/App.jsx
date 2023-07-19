@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom'
 
 import './Layout.css'
+import './Typography.css'
 
 import { Layout } from 'Layout'
 
