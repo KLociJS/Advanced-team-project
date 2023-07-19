@@ -1,5 +1,7 @@
 ﻿using Eventure.Models;
 using Eventure.Models.Entities;
+using Eventure.Models.RequestDto;
+using Eventure.Models.Results;
 
 namespace Eventure.Services;
 
@@ -11,10 +13,32 @@ public class EventService : IEventService
     {
         _context = eventureContext;
     }
-    public async Task CreateEvent(Event newEvent)
-    { 
-        _context.Events.Add(newEvent);
+    public async Task<EventActionResult> CreateEventAsync(CreateEventDto createEventDto)
+    {
+        try
+        {
+            var newEvent = new Event()
+            {
+                Date = createEventDto.Date,
+                Visibility = createEventDto.Visibility,
+                HeadCount = createEventDto.HeadCount,
+                RecommendedAge = createEventDto.RecommendedAge,
+                Duration = createEventDto.Duration,
+                Price = createEventDto.Price,
+                LocationId = createEventDto.LocationId,
+                CategoryId = createEventDto.CategoryId,
+                UserId = createEventDto.UserId
+            };
+            
         await _context.SaveChangesAsync();
+        return EventActionResult.Succeed("Event created");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
     }
 
     public async Task DeleteEvent(long id)
