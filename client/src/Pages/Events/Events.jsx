@@ -3,6 +3,10 @@ import './Events.css'
 import { DateInput, Input } from 'Components'
 
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2'
+import { 
+  PrimaryButton,
+  SecondaryButton,
+ } from 'Components'
 
 export default function Events() {
 
@@ -19,6 +23,7 @@ export default function Events() {
 
   const handleSearchSubmit = (e) =>{
     e.preventDefault()
+    setIsOpen(false)
 
     console.log(eventName,location,distance,category,minPrice,maxPrice,startDate, endDate)
   }
@@ -41,10 +46,14 @@ export default function Events() {
           <Input label='Min Price' type='number' inputValue={minPrice} setInputValue={setMinPrice} />
           <Input label='Max Price' type='number' inputValue={maxPrice} setInputValue={setMaxPrice} />
         </div>
-        <button onClick={()=>setIsOpen(false)}>Search</button>
+        <PrimaryButton text='Search' clickHandler={handleSearchSubmit}/>
+        <SecondaryButton text='Cancel' clickHandler={()=>setIsOpen(false)} />
       </form>
       <section className='card-container'>
-      <button className={`search-button${isOpen ? ' hidden' : ''}`} onClick={()=>setIsOpen(b=>!b)}>Search</button>
+      <button className={`searchbar-toggle${isOpen ? ' hidden' : ''}`} onClick={()=>setIsOpen(b=>!b)}>
+        Search
+        <HiMiniMagnifyingGlass className='searchbar-toggle-icon'/>
+      </button>
 
       </section>
     </>
