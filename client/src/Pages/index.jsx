@@ -5,6 +5,7 @@ import Home from "./Home/Home";
 import JoinedEvents from "./JoinedEvents/JoinedEvents";
 import Login from "./Login/Login";
 import Signup from "./Signup/Signup";
+import CreatedEvents from "./CreatedEvents/CreatedEvents";
 
 export {
     CreateEvent,
@@ -14,4 +15,5 @@ export {
     JoinedEvents,
     Login,
     Signup,
+    CreatedEvents,
 }

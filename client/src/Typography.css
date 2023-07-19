@@ -20,3 +20,7 @@ p {
 .center-text {
     text-align: center;
 }
+
+.remove-underline{
+    text-decoration: none;
+}

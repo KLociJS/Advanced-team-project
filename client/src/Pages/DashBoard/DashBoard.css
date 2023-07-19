@@ -1,0 +1,23 @@
+.button-container{
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+    flex-wrap: wrap;
+    @media screen and (max-width:700px) {
+        flex-direction: column;
+    }
+}
+
+.menu-card{
+    margin:auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:1rem;
+
+    padding: 2rem;
+
+    border-radius: 5px;
+    border: 1px solid var(--transparent-bgc);
+    box-shadow: 5px 2px 5px var(--transparent-bgc);
+}

@@ -17,6 +17,9 @@ export default function NavBar() {
         <li className='nav-li'>
           <NavLink to='events' className='nav-link' onClick={()=>setIsOpen(false)}>Events</NavLink>
         </li>
+        <li className='nav-li'>
+          <NavLink to='dashboard' className='nav-link' onClick={()=>setIsOpen(false)}>Events Dashboard</NavLink>
+        </li>
         <li className='nav-li align-right'>
           <NavLink to='login' className='nav-link' onClick={()=>setIsOpen(false)}>Login</NavLink>
         </li>
