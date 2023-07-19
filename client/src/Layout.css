@@ -5,3 +5,12 @@
     margin: auto;
     position: relative;
 }
+
+.flex-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.mb-2{
+    margin-bottom: 2rem;
+}

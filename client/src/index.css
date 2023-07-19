@@ -6,16 +6,14 @@
   --primary: #55828B;
   --secondary: #EBEBEB;
   --transparent-bgc: #ebebebc2;
-  --text-primary: #272727;
+  --text-primary: #2b2b2b;
   --text-secondary: #6C6C6C;
 }
 
 *{
   font-family: 'Nunito', sans-serif;
+  color: var(--text-primary);
 }
-
-
-
 
 /*
   1. Use a more-intuitive box-sizing model.
@@ -43,7 +41,6 @@ body {
   5. Improve media defaults
 */
 img, picture, video, canvas, svg {
-  display: block;
   max-width: 100%;
 }
 /*

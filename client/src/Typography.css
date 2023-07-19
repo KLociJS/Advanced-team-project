@@ -1,0 +1,22 @@
+.react-icon{
+    margin: 0rem 0.75rem;
+    font-size: 1.75rem;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--text-primary);
+}
+
+p {
+    color: var(--text-secondary);
+}
+
+.secondary-text{
+    font-size: 0.85rem;;
+}
+
+.center-text {
+    text-align: center;
+}
