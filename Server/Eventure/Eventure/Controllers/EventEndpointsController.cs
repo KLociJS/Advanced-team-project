@@ -1,3 +1,5 @@
+using Eventure.Models.RequestDto;
+using Eventure.Services;
 using Microsoft.AspNetCore.Mvc;
 namespace Eventure.Controllers;
 
@@ -5,10 +7,34 @@ namespace Eventure.Controllers;
 [Route("[controller]")]
 public class EventEndpointsController: ControllerBase
 {
-    [HttpPost()]
-    public IActionResult CreateEvent()
+    private readonly IEventService _eventService;
+
+    public EventEndpointsController(IEventService eventService)
     {
-        return Ok();
+        _eventService = eventService;
+    }
+
+    [HttpPost()]
+    public async Task<ActionResult> CreateEvent(CreateEventDto createEventDto)
+    {
+        try
+        {
+            var createEventResult = await _eventService.CreateEventAsync(createEventDto);
+            if (createEventResult.Succeeded)
+            {
+            return Ok(createEventResult.Response);
+                
+            }
+            else
+            {
+                return BadRequest(new{message = "Bad bat!"} );
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [HttpPut()]
