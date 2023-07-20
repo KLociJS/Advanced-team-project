@@ -1,9 +1,11 @@
 using Eventure.Models;
+using Eventure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddDbContext<EventureContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")) );
 
 builder.Services.AddControllers();

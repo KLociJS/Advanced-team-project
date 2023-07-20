@@ -70,4 +70,14 @@ public class EventService : IEventService
             await _context.SaveChangesAsync();
         }
     }
+
+    public List<Location> GetLocation(string location)
+    {
+        return _context.Locations.Where(l => l.Name.StartsWith(location)).ToList();
+    }
+
+    public List<Category> GetCategory(string category)
+    {
+        return _context.Categories.Where(c => c.Name.Equals(category)).ToList();
+    }
 }
