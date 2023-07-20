@@ -15,7 +15,6 @@ public class EventureContext : IdentityDbContext<User>
 
     public EventureContext(DbContextOptions<EventureContext> options) : base(options)
     {
-        Seed(this);
     }
 
     public static void Seed(EventureContext context)
@@ -23,9 +22,7 @@ public class EventureContext : IdentityDbContext<User>
         if (!context.Locations.Any())
         {
             var fileName = "hu.csv";
-            var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var filePath = Path.Combine(folderPath, "Advanced-team-project", fileName);
-            var locations = Location.LoadLocationsFromCsv(filePath);
+            var locations = Location.LoadLocationsFromCsv(fileName);
 
             context.Locations.AddRange(locations);
             context.SaveChanges();
@@ -34,10 +31,8 @@ public class EventureContext : IdentityDbContext<User>
         if (!context.Categories.Any())
         {
             var fileName = "Category.csv";
-            var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var filePath = Path.Combine(folderPath, "Advanced-team-project", fileName);
 
-            var categories = Category.LoadCategoriesFromCsv(filePath);
+            var categories = Category.LoadCategoriesFromCsv(fileName);
             context.Categories.AddRange(categories);
             context.SaveChanges();
         }
