@@ -1,3 +1,4 @@
+using System.Reflection;
 using Eventure.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,5 +15,20 @@ public class EventureContext : IdentityDbContext<User>
 
     public EventureContext(DbContextOptions<EventureContext> options) : base(options)
     {
+        Seed(this);
+    }
+  
+    public static void Seed(EventureContext context)
+    {
+        if (!context.Locations.Any())
+        {
+            var fileName = "hu.csv";
+            var folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var filePath = Path.Combine(folderPath, "Advanced-team-project", fileName);
+            var locations = Location.LoadLocationsFromCsv(filePath);
+                
+            context.Locations.AddRange(locations);
+            context.SaveChanges();
+        }
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eventure.Migrations
 {
     [DbContext(typeof(EventureContext))]
-    [Migration("20230718120955_Initial")]
+    [Migration("20230720084440_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
