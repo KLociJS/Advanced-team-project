@@ -1,4 +1,5 @@
 using Eventure.Models.RequestDto;
+using Eventure.Models.ResponseDto;
 using Eventure.Services;
 using Microsoft.AspNetCore.Mvc;
 namespace Eventure.Controllers;
@@ -65,5 +66,46 @@ public class EventEndpointsController: ControllerBase
     public IActionResult SearchEvent()
     {
         return Ok();
+    }
+
+    [HttpGet("location")]
+    public IActionResult SearchLocation(string location)
+    {
+        try
+        {
+        var locations = _eventService.GetLocation(location);
+        var result = new LocationResponseDto()
+        {
+            Locations = locations
+        };
+        return Ok(result);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var result = new Response() { Message = "Error in searching location"};
+            return StatusCode(500, result);
+            
+        }
+    }
+
+    [HttpGet("category")]
+    public IActionResult SearchCategory(string category)
+    {
+        try
+        {
+            var categories = _eventService.GetCategory(category);
+            var result = new CategoryResponseDto()
+            {
+                Categories = categories
+            };
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e); 
+            var result = new Response() { Message = "Error in searching categories"};
+            return StatusCode(500, result);
+        }
     }
 }

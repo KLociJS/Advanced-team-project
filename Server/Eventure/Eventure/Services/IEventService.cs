@@ -9,4 +9,6 @@ public interface IEventService
     Task<EventActionResult> CreateEventAsync(CreateEventDto createEventDto);
     Task DeleteEvent(long id);
     Task UpdateEvent(Event eventToUpdate);
+    List<Location> GetLocation(string location);
+    List<Category> GetCategory(string category);
 }
