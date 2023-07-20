@@ -74,11 +74,12 @@ namespace Eventure.Migrations
                     b.Property<long>("CategoryId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("EndingDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Duration")
-                        .HasColumnType("integer");
+                    b.Property<string>("EventName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("HeadCount")
                         .HasColumnType("integer");
@@ -92,12 +93,12 @@ namespace Eventure.Migrations
                     b.Property<int>("RecommendedAge")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("StartingDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<byte>("Visibility")
-                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 

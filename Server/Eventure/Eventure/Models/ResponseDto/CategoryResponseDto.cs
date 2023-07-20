@@ -4,5 +4,5 @@ namespace Eventure.Models.ResponseDto;
 
 public class CategoryResponseDto
 {
-    public List<Category> Categories { get; set; } = new List<Category>();
+    public List<Category> Data { get; set; } = new List<Category>();
 }

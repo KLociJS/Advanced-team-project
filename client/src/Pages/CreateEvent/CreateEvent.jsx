@@ -1,7 +1,11 @@
 import { AutoCompleteInput, DateInput, Input, PrimaryButton, SecondaryButton } from 'Components'
 import React, { useState } from 'react'
+import { json } from 'react-router-dom'
 
 export default function CreateEvent() {
+
+  const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
+  const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
 
   const [eventName, setEventName] = useState('')
   const [category, setCategory] = useState('')
@@ -16,21 +20,52 @@ export default function CreateEvent() {
 
   const clickHandler = (e) => {
     e.preventDefault()
-    console.log(eventName,category,location,price,maxHeadCount,recommendedAge,startingDate,endingDate);
+
+    const newEvent = {
+      categoryId,
+      locationId,
+      eventName,
+      startingDate,
+      endingDate,
+      headcount : maxHeadCount,
+      price,
+      recommendedAge,
+      userID: '1'
+    }
+
+    console.log(newEvent);
+
+    fetch('https://localhost:7019/EventEndpoints',{
+      method: 'POST',
+      headers: {
+        'content-type' : 'application/json'
+      },
+      body: JSON.stringify(newEvent)
+    })
+    .then(res=>res.json())
+    .then(data=>console.log(data))
+    .catch(console.log)
+    
   }
 
   return (
     <div className='event-form'>
       <h1>Create New Event</h1>
+      <Input label='Event name' inputValue={eventName} setInputValue={setEventName}/>
       <AutoCompleteInput 
-        label='category'
+        label='Category'
         inputValue={category}
         setInputValue={setCategory}
         setId={setCategoryId}
+        url={categoriesUrl}
       />
-      <Input label='Event name' inputValue={eventName} setInputValue={setEventName}/>
-      <Input label='Category' inputValue={category} setInputValue={setCategory}/>
-      <Input label='Location' inputValue={location} setInputValue={setLocation}/>
+      <AutoCompleteInput 
+        label='Location'
+        inputValue={location}
+        setInputValue={setLocation}
+        setId={setLocationId}
+        url={locationsUrl}
+      />
       <Input label='Price' type='number' inputValue={price} setInputValue={setPrice}/>
       <Input label='Max Headcount' type='number' inputValue={maxHeadCount} setInputValue={setMaxHeadCount}/>
       <Input label='Recommended Age' type='number' inputValue={recommendedAge} setInputValue={setRecommendedAge}/>

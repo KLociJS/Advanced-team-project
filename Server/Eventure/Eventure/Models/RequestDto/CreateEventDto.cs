@@ -4,11 +4,11 @@ namespace Eventure.Models.RequestDto;
 
 public class CreateEventDto
 {
-    public DateTime Date { get; set; }
-    public Visibility Visibility { get; set; }
+    public string EventName { get; set; } = string.Empty;
+    public string StartingDate { get; set; }
+    public string EndingDate { get; set; }
     public int HeadCount { get; set; }
     public int RecommendedAge { get; set; }
-    public int Duration{ get; set; }
     public int Price { get; set; }
     public long LocationId { get; set; }
     public long CategoryId { get; set; }

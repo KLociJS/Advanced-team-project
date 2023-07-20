@@ -17,21 +17,27 @@ public class EventService : IEventService
     {
         try
         {
+            var utcTimeZone = TimeZoneInfo.Utc;
             var newEvent = new Event()
             {
-                Date = createEventDto.Date,
-                Visibility = createEventDto.Visibility,
+                EventName = createEventDto.EventName,
+                StartingDate = DateTimeOffset.ParseExact(createEventDto.StartingDate, "yyyy-MM-dd", null).DateTime,
+                EndingDate = DateTimeOffset.ParseExact(createEventDto.EndingDate, "yyyy-MM-dd", null).DateTime,
                 HeadCount = createEventDto.HeadCount,
                 RecommendedAge = createEventDto.RecommendedAge,
-                Duration = createEventDto.Duration,
                 Price = createEventDto.Price,
                 LocationId = createEventDto.LocationId,
                 CategoryId = createEventDto.CategoryId,
                 UserId = createEventDto.UserId
             };
             
-        await _context.SaveChangesAsync();
-        return EventActionResult.Succeed("Event created");
+            newEvent.StartingDate = TimeZoneInfo.ConvertTimeToUtc(newEvent.StartingDate, utcTimeZone);
+            newEvent.EndingDate = TimeZoneInfo.ConvertTimeToUtc(newEvent.EndingDate, utcTimeZone);
+
+            await _context.Events.AddAsync(newEvent);
+            
+            await _context.SaveChangesAsync();
+            return EventActionResult.Succeed("Event created");
         }
         catch (Exception e)
         {
@@ -61,8 +67,6 @@ public class EventService : IEventService
         if (eventFound != null)
         {
             eventFound.Location = eventToUpdate.Location;
-            eventFound.Date = eventToUpdate.Date;
-            eventFound.Duration = eventToUpdate.Duration;
             eventFound.Category = eventToUpdate.Category;
             
             
@@ -73,13 +77,13 @@ public class EventService : IEventService
 
     public List<Location> GetLocation(string location)
     {
-        location = location.ToUpper();
-        return _context.Locations.Where(l => l.Name.StartsWith(location)).ToList();
+        var formattedLocation = location.Substring(0, 1).ToUpper() + location.Substring(1);
+        return _context.Locations.Where(l => l.Name.Contains(formattedLocation)).ToList();
     }
 
     public List<Category> GetCategory(string category)
     {
-        category = category.ToUpper();
-        return _context.Categories.Where(c => c.Name.StartsWith(category)).ToList();
+        var formattedCategory = category.Substring(0, 1).ToUpper() + category.Substring(1);
+        return _context.Categories.Where(c => c.Name.Contains(formattedCategory)).ToList();
     }
 }
