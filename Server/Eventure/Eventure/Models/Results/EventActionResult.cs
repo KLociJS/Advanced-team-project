@@ -12,5 +12,11 @@ public class EventActionResult
         var response = new Response() { Message = message };
         return new EventActionResult() { Succeeded = true, Response = response};
     }
-    
+
+    public static EventActionResult Failed(string message)
+    {
+        var response = new Response() { Message = message };
+        return new EventActionResult() { Succeeded = false, Response = response};
+
+    }
 }
