@@ -6,8 +6,8 @@ namespace Eventure.Models.Results;
 public class GetEventResult
 {
     public bool Succeeded { get; set; }
-    public Response Response { get; set; }
-    public Event EventData { get; set; } 
+    public Response? Response { get; set; }
+    public Event? EventData { get; set; } 
 
     public static GetEventResult Succeed(string message, Event eventData)
     {
