@@ -73,6 +73,7 @@ public class EventService : IEventService
 
     public List<Location> GetLocation(string location)
     {
+        location = location.ToUpper();
         return _context.Locations.Where(l => l.Name.StartsWith(location)).ToList();
     }
 
