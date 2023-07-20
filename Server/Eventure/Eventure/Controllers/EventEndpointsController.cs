@@ -38,27 +38,84 @@ public class EventEndpointsController: ControllerBase
     }
 
     [HttpPut()]
-    public IActionResult UpdateEvent()
+    public async Task<IActionResult> UpdateEvent(string id)
     {
-        return Ok();
+        try
+        {
+            var result = await _eventService.UpdateEvent(id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        ;
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteEvent(int id)
+    public async Task<IActionResult> DeleteEvent(string id)
     {
-        return Ok(id);
+        try
+        {
+            var result = await _eventService.DeleteEvent(id);
+            if (result.Succeeded)
+            {
+                return Ok(result.Response);
+                
+            }
+
+            return BadRequest(result.Response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var result = new Response() { Message = "Server error"};
+            return StatusCode(500, result);
+        }   
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetEventById(int id)
+    public async Task<IActionResult> GetEventById(string id)
     {
-        return Ok(id);
+        try
+        {
+            var result = await _eventService.GetEventByIdAsync(id);
+            if (result.Succeeded)
+            {
+                return Ok(result.Response);
+                
+            }
+
+            return BadRequest(result);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var result = new Response() { Message = "Server error"};
+            return StatusCode(500, result);
+        }   
     }
 
     [HttpGet("random")]
-    public IActionResult GetRandomEvents()
+    public async Task<IActionResult> GetRandomEvents()
     {
-        return Ok();
+        try
+        {
+            var randomResult = await _eventService.GetRandomEvent();
+            if (randomResult.Succeeded)
+            {
+                return Ok(randomResult.Response);
+            }
+
+            return BadRequest(randomResult);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var result = new Response() { Message = "Server error"};
+            return StatusCode(500, result);
+        };
     }
 
     [HttpGet("search")]
