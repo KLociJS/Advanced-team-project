@@ -141,8 +141,11 @@ public class EventService : IEventService
 
     public List<Category> GetCategory(string category)
     {
-        category = category.Substring(0, 1).ToUpper() + category.Substring(1);
-        return _context.Categories.Where(c => c.Name.Equals(category)).ToList();
+
+
+        category = category.ToUpper();
+        return _context.Categories.Where(c => c.Name.StartsWith(category)).ToList();
+
     }
 
     
