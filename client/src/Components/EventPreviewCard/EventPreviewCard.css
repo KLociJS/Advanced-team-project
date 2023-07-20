@@ -1,0 +1,34 @@
+.event-card{
+    padding: 1rem;
+    border-radius: 5px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    box-shadow: 1px 1px 5px var(--text-secondary);
+
+    width: 200px;
+}
+
+.event-card h1{
+    text-align: center;
+}
+.event-card h3, .event-card>p{
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+.event-card p{
+    font-size: 0.75rem;
+}
+
+.date-icon-container{
+    display: flex;
+    align-items: center;
+    gap:0.25rem;
+}
+
+.card-icon{
+    font-size: 1.5rem;
+}

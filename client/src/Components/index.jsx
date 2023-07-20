@@ -5,6 +5,7 @@ import SecondaryButton from "./Button/SecondaryButton";
 import SearchForm from "./SearchForm/SearchForm";
 import CardDisplayer from "./CardDisplayer/CardDisplayer";
 import AutoCompleteInput from "./Input/AutocompleteInput/AutoCompleteInput";
+import EventPreviewCard from "./EventPreviewCard/EventPreviewCard";
 
 export {
     Input,
@@ -14,4 +15,5 @@ export {
     SearchForm,
     CardDisplayer,
     AutoCompleteInput,
+    EventPreviewCard
 }
