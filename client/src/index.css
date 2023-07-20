@@ -4,6 +4,7 @@
 /* Colors */
 :root {
   --primary: #55828B;
+  --primary-transparent: #55828bf5;
   --secondary: #EBEBEB;
   --transparent-bgc: #ebebebc2;
   --text-primary: #2b2b2b;

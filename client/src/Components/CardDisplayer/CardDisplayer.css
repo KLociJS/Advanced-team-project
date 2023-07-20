@@ -1,0 +1,47 @@
+.card-container{
+    width: calc(100% - 350px);
+    margin-left: 350px;
+    overflow-y: scroll;
+    height: calc(100vh - 60px);
+}
+
+.searchbar-toggle{
+    position: relative;
+    width: 200px;
+    margin: auto;
+    display: none;
+    text-align: left;
+    padding: 0.5rem;
+    border-radius: 20px;
+
+    border: 1px solid var(--primary);
+    background-color: transparent;
+    color: var(--primary);
+}
+.searchbar-toggle:hover{
+    cursor: pointer;
+    border-color: var(--primary);
+}
+
+.searchbar-toggle-icon{
+    position: absolute;
+    color: var(--primary);
+    transform: translate(-50%, -50%);
+    top:50%;
+    right: 0;
+}
+
+@media screen and (max-width:1000px) {
+    .searchbar-toggle{
+        display: block;
+        margin: 1rem auto;
+    }
+    .searchbar-toggle.hidden{
+        display: none;
+        margin: 1rem auto;
+    }
+    .card-container{
+        width: 100%;
+        margin-left: 0;
+    }
+}
