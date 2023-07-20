@@ -3,6 +3,7 @@ using System;
 using Eventure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eventure.Migrations
 {
     [DbContext(typeof(EventureContext))]
-    partial class EventureContextModelSnapshot : ModelSnapshot
+    [Migration("20230720144420_Modify event structure")]
+    partial class Modifyeventstructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,10 +78,6 @@ namespace Eventure.Migrations
 
                     b.Property<DateTime>("EndingDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EventName")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("HeadCount")
                         .HasColumnType("integer");

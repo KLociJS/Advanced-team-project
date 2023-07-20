@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function AutoCompleteInput({ inputValue, setInputValue, setId, label, type }) {
+export default function AutoCompleteInput({ inputValue, setInputValue, setId, label, type, url }) {
 
     const [suggestions, setSuggestions] = useState([])
 
@@ -11,21 +11,24 @@ export default function AutoCompleteInput({ inputValue, setInputValue, setId, la
   
     const isActive = isFocused || inputValue ? 'active' : ''
 
-    const handleInputChange = async(e) => {
+    console.log(suggestions);
 
+    const handleInputChange = async(e) => {
         const value = e.target.value
         setInputValue(value)
 
-        if(value.length>3){
-            const currSuggestions = await fetchSuggestions()
-            setSuggestions(currSuggestions)
-        }
+        if(value.length>2){
+            const currSuggestions = await fetchSuggestions(url+value)
+            console.log(currSuggestions);
+            setSuggestions(currSuggestions.data)
 
-        if(suggestions.includes(value)){
-            const suggestionId = suggestions.find(s=>s.name).id;
-            setId(suggestionId)
+            const isLoactionMatches = currSuggestions.data.find(l=>l.name===value)
+            if(isLoactionMatches){
+                console.log('c');
+                const suggestionId = currSuggestions.data.find(s=>s.name===value).id;
+                setId(suggestionId)
+            }
         }
-
     }
 
     const fetchSuggestions = async (url) =>{
@@ -46,11 +49,11 @@ export default function AutoCompleteInput({ inputValue, setInputValue, setId, la
                   onBlur={handleBlur}
                   onChange={handleInputChange}
                   autoComplete="off"
-                  list='suggestions'
+                  list={label}
               />
-              <datalist id='suggestions'>
+              <datalist id={label}>
                 {suggestions.map(s=>(
-                    <option key={s.id} value={s.name}/>
+                    <option key={s.id} value={s.name}> {s.name} </option>
                 ))}
               </datalist>
       </div>

@@ -23,12 +23,11 @@ public class EventEndpointsController: ControllerBase
             var createEventResult = await _eventService.CreateEventAsync(createEventDto);
             if (createEventResult.Succeeded)
             {
-            return Ok(createEventResult.Response);
-                
+                return Ok(createEventResult.Response);
             }
             else
             {
-                return BadRequest(new{message = "Bad bat!"} );
+                return BadRequest(new { message = "Bad bat!" });
             }
         }
         catch (Exception e)
@@ -130,12 +129,12 @@ public class EventEndpointsController: ControllerBase
     {
         try
         {
-        var locations = _eventService.GetLocation(location);
-        var result = new LocationResponseDto()
-        {
-            Locations = locations
-        };
-        return Ok(result);
+            var locations = _eventService.GetLocation(location);
+            var result = new LocationResponseDto
+            {
+                Data = locations
+            };
+            return Ok(result);
         }
         catch (Exception e)
         {
@@ -154,7 +153,7 @@ public class EventEndpointsController: ControllerBase
             var categories = _eventService.GetCategory(category);
             var result = new CategoryResponseDto()
             {
-                Categories = categories
+                Data = categories
             };
             return Ok(result);
         }
