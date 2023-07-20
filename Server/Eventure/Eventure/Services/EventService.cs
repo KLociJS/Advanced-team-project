@@ -79,6 +79,7 @@ public class EventService : IEventService
 
     public List<Category> GetCategory(string category)
     {
-        return _context.Categories.Where(c => c.Name.Equals(category)).ToList();
+        category = category.ToUpper();
+        return _context.Categories.Where(c => c.Name.StartsWith(category)).ToList();
     }
 }
