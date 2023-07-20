@@ -1,6 +1,7 @@
 ﻿using Eventure.Models;
 using Eventure.Models.Entities;
 using Eventure.Models.RequestDto;
+using Eventure.Models.ResponseDto;
 using Eventure.Models.Results;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,6 +67,23 @@ public class EventService : IEventService
         };
     }
 
+    public async Task<List<Event>> SearchEventAsync()
+    {
+        try
+        {
+            var events = _context.Events
+                .Include(e => e.Location)
+                .Include(e => e.Category)
+                .ToList();
+            return events;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     public async Task<GetEventResult> GetRandomEvent()
     {
         try
@@ -90,7 +108,7 @@ public class EventService : IEventService
         ;
     }
 
-    public async Task<EventActionResult> DeleteEvent(string id)
+    public async Task<EventActionResult> DeleteEvent(long id)
     {
         try
         {
@@ -111,27 +129,45 @@ public class EventService : IEventService
         }
     }
 
-    public async Task<GetEventResult> UpdateEvent(Event eventToUpdate)
+    public async Task<UpdateEventResult> UpdateEvent(UpdateEventDto updateEventDto)
     {
         try
         {
-
-            var eventFound = _context.Events.FindAsync(eventToUpdate.Id).Result;
+            var eventFound = await _context.Events
+                .Include(e => e.Location) // Include the Location
+                .Include(e => e.Category) // Include the Category
+                .FirstOrDefaultAsync(e => e.Id == updateEventDto.Id);
             if (eventFound != null)
             {
-                eventFound.Location = eventToUpdate.Location;
-                eventFound.Date = eventToUpdate.Date;
-                eventFound.Duration = eventToUpdate.Duration;
-                eventFound.Category = eventToUpdate.Category;
-
-            
-            
+                eventFound.LocationId = updateEventDto.LocationId;
+                eventFound.CategoryId = updateEventDto.CategoryId;
+                eventFound.EventName = updateEventDto.EventName;
+                eventFound.StartingDate = updateEventDto.StartingDate;
+                eventFound.EndingDate = updateEventDto.EndingDate;
+                eventFound.HeadCount = updateEventDto.HeadCount;
+                eventFound.RecommendedAge = updateEventDto.RecommendedAge;
+                eventFound.Price = updateEventDto.Price;
+                
                 _context.Events.Update(eventFound);
                 await _context.SaveChangesAsync();
-                return GetEventResult.Succeed("Event updated successfully", eventFound);
+                
+                var resultEvent = new EventPreviewResponseDto()
+                {
+                    Id = updateEventDto.Id,
+                    EventName = updateEventDto.EventName,
+                    StartingDate = updateEventDto.StartingDate,
+                    EndingDate = updateEventDto.EndingDate,
+                    HeadCount = updateEventDto.HeadCount,
+                    RecommendedAge = updateEventDto.RecommendedAge,
+                    Price = updateEventDto.Price,
+                    Location = eventFound.Location,
+                    Category = eventFound.Category
+                };
+                
+                return UpdateEventResult.Success(resultEvent);
             }
 
-            return GetEventResult.Failed("Couldn't find event by id");
+            return UpdateEventResult.Fail();
         }
         catch (Exception e)
         {

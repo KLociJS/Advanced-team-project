@@ -38,23 +38,26 @@ public class EventEndpointsController: ControllerBase
     }
 
     [HttpPut()]
-    public async Task<IActionResult> UpdateEvent(string id)
+    public async Task<IActionResult> UpdateEvent(UpdateEventDto updateEventDto)
     {
         try
         {
-            var result = await _eventService.UpdateEvent(id);
+            var result = await _eventService.UpdateEvent(updateEventDto);
+            if (result.Succeeded)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
-
-        ;
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteEvent(string id)
+    public async Task<IActionResult> DeleteEvent(long id)
     {
         try
         {
@@ -64,7 +67,6 @@ public class EventEndpointsController: ControllerBase
                 return Ok(result.Response);
                 
             }
-
             return BadRequest(result.Response);
         }
         catch (Exception e)
@@ -119,9 +121,11 @@ public class EventEndpointsController: ControllerBase
     }
 
     [HttpGet("search")]
-    public IActionResult SearchEvent()
+    public async Task<IActionResult> SearchEvent()
     {
-        return Ok();
+        var events = await _eventService.SearchEventAsync();
+        var response = new EventsPreviewResponseDto { Events = events };
+        return Ok(response);
     }
 
     [HttpGet("location")]
