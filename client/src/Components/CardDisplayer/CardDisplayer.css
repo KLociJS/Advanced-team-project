@@ -8,10 +8,11 @@
     display: flex;
     flex-wrap: wrap;
     /* justify-content: space-around; */
-    gap: 2rem;
+    gap: 1rem;
 
 }
 .search-button-container{
+    display: none;
     width: 100%;
 }
 .searchbar-toggle{
@@ -41,6 +42,10 @@
 }
 
 @media screen and (max-width:1000px) {
+    .search-button-container{
+        display: block;
+        width: 100%;
+    }
     .searchbar-toggle{
         display: block;
         margin: 1rem auto;
