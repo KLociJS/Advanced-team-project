@@ -1,11 +1,13 @@
 import { AutoCompleteInput, DateInput, Input, PrimaryButton, SecondaryButton } from 'Components'
 import React, { useState } from 'react'
-import { json } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function CreateEvent() {
 
   const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
   const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
+
+  const navigate = useNavigate()
 
   const [eventName, setEventName] = useState('')
   const [category, setCategory] = useState('')
@@ -43,7 +45,10 @@ export default function CreateEvent() {
       body: JSON.stringify(newEvent)
     })
     .then(res=>res.json())
-    .then(data=>console.log(data))
+    .then(data=>{
+      console.log(data)
+      navigate('/events')
+    })
     .catch(console.log)
     
   }
