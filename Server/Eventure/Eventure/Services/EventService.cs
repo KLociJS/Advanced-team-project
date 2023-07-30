@@ -20,12 +20,11 @@ public class EventService : IEventService
     {
         try
         {
-            var utcTimeZone = TimeZoneInfo.Utc;
             var newEvent = new Event()
             {
                 EventName = createEventDto.EventName,
-                StartingDate = DateTimeOffset.ParseExact(createEventDto.StartingDate, "yyyy-MM-dd", null).DateTime,
-                EndingDate = DateTimeOffset.ParseExact(createEventDto.EndingDate, "yyyy-MM-dd", null).DateTime,
+                StartingDate = Convert.ToDateTime(createEventDto.StartingDate).ToUniversalTime(),
+                EndingDate = Convert.ToDateTime(createEventDto.EndingDate).ToUniversalTime(),
                 HeadCount = createEventDto.HeadCount,
                 RecommendedAge = createEventDto.RecommendedAge,
                 Price = createEventDto.Price,
@@ -33,9 +32,6 @@ public class EventService : IEventService
                 CategoryId = createEventDto.CategoryId,
                 UserId = createEventDto.UserId
             };
-            
-            newEvent.StartingDate = TimeZoneInfo.ConvertTimeToUtc(newEvent.StartingDate, utcTimeZone);
-            newEvent.EndingDate = TimeZoneInfo.ConvertTimeToUtc(newEvent.EndingDate, utcTimeZone);
 
             await _context.Events.AddAsync(newEvent);
             
@@ -127,20 +123,14 @@ public class EventService : IEventService
 
             if (startingDate != null)
             {
-                var utcTimeZone = TimeZoneInfo.Utc;
-                var date = DateTimeOffset.ParseExact(startingDate, "yyyy-MM-dd", null).DateTime;
-                var utcDate = TimeZoneInfo.ConvertTimeToUtc(date, utcTimeZone);
-                
-                events = events.Where(e => e.StartingDate > utcDate);
+                var startingDateUtc = Convert.ToDateTime(startingDate).ToUniversalTime();
+                events = events.Where(e => e.StartingDate > startingDateUtc);
             }
             
             if (endingDate != null)
             {
-                var utcTimeZone = TimeZoneInfo.Utc;
-                var date = DateTimeOffset.ParseExact(endingDate, "yyyy-MM-dd", null).DateTime;
-                //var utcDate = TimeZoneInfo.ConvertTimeToUtc(date, utcTimeZone);
-                var utcDate = DateTimeOffset.ParseExact(endingDate, "yyyy-MM-dd", null, DateTimeStyles.AssumeUniversal);
-                events = events.Where(e => e.EndingDate < utcDate);
+                var endingDateUtc = Convert.ToDateTime(endingDate).ToUniversalTime();
+                events = events.Where(e => e.EndingDate < endingDateUtc);
             }
             
             return await events.ToListAsync();

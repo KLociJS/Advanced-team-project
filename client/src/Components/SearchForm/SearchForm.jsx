@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import './SearchForm.css'
 
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2'
+
 import { 
   PrimaryButton,
   SecondaryButton,
@@ -9,8 +10,6 @@ import {
   Input, 
   AutoCompleteInput,
  } from 'Components'
-
-
 
 export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
 
@@ -26,7 +25,9 @@ export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
     const [minPrice,setMinPrice] = useState('')
     const [maxPrice, setMaxPrice] = useState('')
     const [startDate, setStartDate] = useState('')
+    const [startTime, setStartTime] = useState('00:00')
     const [endDate, setEndDate] = useState('')
+    const [endTime, setEndTime] = useState('00:00')
 
     //dictionary with params, iterating throught and concatenating url
 
@@ -34,13 +35,17 @@ export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
         e.preventDefault()
         setIsOpen(false)
 
+        const startDateTime = startDate ? new Date(startDate).toISOString().replace(/\d{2}:\d{2}/g,startTime) : ''
+        const endDateTime = endDate ? new Date(endDate).toISOString().replace(/\d{2}:\d{2}/g,endTime) : ''
+        
+
         const eventNameParam = eventName ? `?eventName=${eventName}` : ''
         const locationParam = location ? `&location=${location}` : ''
         const categoryParam = category ? `&category=${category}` : ''
         const minPriceParam = minPrice ? `&minPrice=${minPrice}` : ''
         const maxPriceParam = maxPrice ? `&maxPrice=${maxPrice}` : ''
-        const startDateParam = startDate ? `&startingDate=${startDate}` : ''
-        const endDateParam = endDate ? `&endingDate=${endDate}` : ''
+        const startDateParam = startDate ? `?startingDate=${startDateTime}` : ''
+        const endDateParam = endDate ? `&endingDate=${endDateTime}` : ''
 
         console.log(eventName,location,distance,category,minPrice,maxPrice,startDate, endDate)
         fetch(`${url}${eventNameParam}${startDateParam}${locationParam}${categoryParam}${minPriceParam}${maxPriceParam}${endDateParam}`)
@@ -75,8 +80,8 @@ export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
             setId={setCategoryId}
             url={categoriesUrl}
             />
-            <DateInput label='Starting Date' inputValue={startDate} setInputValue={setStartDate}/>
-            <DateInput label='Ending Date' inputValue={endDate} setInputValue={setEndDate} />
+            <DateInput label='Starting Date' dateValue={startDate} setDateValue={setStartDate} time={startTime} setTime={setStartTime}/>
+            <DateInput label='Ending Date' dateValue={endDate} setDateValue={setEndDate} time={endTime} setTime={setEndTime}/>
             <div className='flex-container mb-1'>
             <Input label='Min Price' type='number' inputValue={minPrice} setInputValue={setMinPrice} />
             <Input label='Max Price' type='number' inputValue={maxPrice} setInputValue={setMaxPrice} />

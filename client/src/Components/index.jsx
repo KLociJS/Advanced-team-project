@@ -15,5 +15,5 @@ export {
     SearchForm,
     CardDisplayer,
     AutoCompleteInput,
-    EventPreviewCard
+    EventPreviewCard,
 }

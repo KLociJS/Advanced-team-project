@@ -36,8 +36,8 @@ export default function EventPreviewCard(
         <div className='date-icon-container'>
             <CiCalendar className='card-icon'/>
             <div>
-                <p>{startingDate.substring(0,10)}</p>
-                <p>{endingDate.substring(0,10)}</p>
+                <p>{startingDate.substring(0,10)} {startingDate.substring(11,16)}</p>
+                <p>{endingDate.substring(0,10)} {endingDate.substring(11,16)}</p>
             </div>
         </div>
         
