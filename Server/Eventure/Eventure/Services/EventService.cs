@@ -1,4 +1,5 @@
-﻿using Eventure.Models;
+﻿using System.Globalization;
+using Eventure.Models;
 using Eventure.Models.Entities;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
@@ -48,7 +49,7 @@ public class EventService : IEventService
         }
         
     }
-    public async Task<GetEventResult> GetEventByIdAsync(string id)
+    public async Task<GetEventResult> GetEventByIdAsync(long id)
     {
         try
         {
@@ -67,7 +68,7 @@ public class EventService : IEventService
         };
     }
 
-    public async Task<List<Event>> SearchEventAsync()
+    public async Task<List<Event>> GetEventsAsync()
     {
         try
         {
@@ -84,11 +85,78 @@ public class EventService : IEventService
         }
     }
 
+    public async Task<List<Event>> SearchEventAsync(
+        string? eventName, 
+        string? location, 
+        string? category, 
+        string? startingDate, 
+        string? endingDate, 
+        double? minPrice, 
+        double? maxPrice)
+    {
+        try
+        {
+            IQueryable<Event> events = _context.Events
+                .Include(e => e.Location)
+                .Include(e => e.Category);
+            
+            if (eventName != null)
+            {
+                events = events.Where(e => e.EventName.ToLower().Contains(eventName.ToLower()));
+            }
+
+            if (location != null)
+            {
+                events = events.Where(e => e.Location!.Name.ToLower().Contains(location.ToLower()));
+            }
+
+            if (category != null)
+            {
+                events = events.Where(e => e.Category!.Name.ToLower().Contains(category.ToLower()));
+            }
+
+            if (minPrice != null)
+            {
+                events = events.Where(e => e.Price > minPrice);
+            }
+            
+            if (maxPrice != null)
+            {
+                events = events.Where(e => e.Price < maxPrice);
+            }
+
+            if (startingDate != null)
+            {
+                var utcTimeZone = TimeZoneInfo.Utc;
+                var date = DateTimeOffset.ParseExact(startingDate, "yyyy-MM-dd", null).DateTime;
+                var utcDate = TimeZoneInfo.ConvertTimeToUtc(date, utcTimeZone);
+                
+                events = events.Where(e => e.StartingDate > utcDate);
+            }
+            
+            if (endingDate != null)
+            {
+                var utcTimeZone = TimeZoneInfo.Utc;
+                var date = DateTimeOffset.ParseExact(endingDate, "yyyy-MM-dd", null).DateTime;
+                //var utcDate = TimeZoneInfo.ConvertTimeToUtc(date, utcTimeZone);
+                var utcDate = DateTimeOffset.ParseExact(endingDate, "yyyy-MM-dd", null, DateTimeStyles.AssumeUniversal);
+                events = events.Where(e => e.EndingDate < utcDate);
+            }
+            
+            return await events.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     public async Task<GetEventResult> GetRandomEvent()
     {
         try
         {
-            var allEvents = _context.Events.ToListAsync().Result;
+            var allEvents = await _context.Events.ToListAsync();
             if (allEvents.Count == 0)
             {
                 return GetEventResult.Failed("No event found");

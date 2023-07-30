@@ -1,3 +1,4 @@
+using Eventure.Models.Entities;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
 using Eventure.Services;
@@ -78,7 +79,7 @@ public class EventEndpointsController: ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetEventById(string id)
+    public async Task<IActionResult> GetEventById(long id)
     {
         try
         {
@@ -120,10 +121,33 @@ public class EventEndpointsController: ControllerBase
         };
     }
 
-    [HttpGet("search")]
-    public async Task<IActionResult> SearchEvent()
+    [HttpGet]
+    public async Task<ActionResult<List<Event>>> GetEvents()
     {
-        var events = await _eventService.SearchEventAsync();
+        var events = await _eventService.GetEventsAsync();
+        var response = new EventsPreviewResponseDto { Events = events };
+        return Ok(response);
+    }
+
+    [HttpGet("search")]
+    public async Task<ActionResult<List<Event>>> SearchEvent(
+        string? eventName, 
+        string? location, 
+        string? category, 
+        string? startingDate, 
+        string? endingDate, 
+        double? minPrice, 
+        double? maxPrice)
+    {
+        var events = await _eventService.SearchEventAsync(
+            eventName, 
+            location, 
+            category, 
+            startingDate, 
+            endingDate, 
+            minPrice, 
+            maxPrice);
+        
         var response = new EventsPreviewResponseDto { Events = events };
         return Ok(response);
     }
