@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Eventure.Models;
+﻿using Eventure.Models;
 using Eventure.Models.Entities;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
@@ -20,16 +19,29 @@ public class EventService : IEventService
     {
         try
         {
+            var location = await _context.Locations.FirstOrDefaultAsync(l => l.Name.ToLower() == createEventDto.Location.ToLower());
+            if (location == null)
+            {
+                return EventActionResult.Failed("Couldn't find location.");
+            }
+            
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == createEventDto.Category.ToLower());
+            if (category == null)
+            {
+                return EventActionResult.Failed("Couldn't find category.");
+            }
+            
             var newEvent = new Event()
             {
                 EventName = createEventDto.EventName,
+                Description = createEventDto.Description,
                 StartingDate = Convert.ToDateTime(createEventDto.StartingDate).ToUniversalTime(),
                 EndingDate = Convert.ToDateTime(createEventDto.EndingDate).ToUniversalTime(),
                 HeadCount = createEventDto.HeadCount,
                 RecommendedAge = createEventDto.RecommendedAge,
                 Price = createEventDto.Price,
-                LocationId = createEventDto.LocationId,
-                CategoryId = createEventDto.CategoryId,
+                Location = location,
+                Category = category,
                 UserId = createEventDto.UserId
             };
 
@@ -49,7 +61,7 @@ public class EventService : IEventService
     {
         try
         {
-            var eventById = _context.Events.FindAsync(id).Result;
+            var eventById = await _context.Events.FindAsync(id);
             if (eventById != null)
             {
                 return GetEventResult.Succeed("Event found", eventById);
@@ -61,7 +73,7 @@ public class EventService : IEventService
         {
             Console.WriteLine(e);
             throw;
-        };
+        }
     }
 
     public async Task<List<Event>> GetEventsAsync()
@@ -70,9 +82,8 @@ public class EventService : IEventService
         {
             var events = _context.Events
                 .Include(e => e.Location)
-                .Include(e => e.Category)
-                .ToList();
-            return events;
+                .Include(e => e.Category);
+            return await events.ToListAsync();
         }
         catch (Exception e)
         {
@@ -162,8 +173,6 @@ public class EventService : IEventService
             Console.WriteLine(e);
             throw;
         }
-
-        ;
     }
 
     public async Task<EventActionResult> DeleteEvent(long id)
@@ -200,6 +209,7 @@ public class EventService : IEventService
                 eventFound.LocationId = updateEventDto.LocationId;
                 eventFound.CategoryId = updateEventDto.CategoryId;
                 eventFound.EventName = updateEventDto.EventName;
+                eventFound.Description = updateEventDto.Description;
                 eventFound.StartingDate = updateEventDto.StartingDate;
                 eventFound.EndingDate = updateEventDto.EndingDate;
                 eventFound.HeadCount = updateEventDto.HeadCount;
@@ -213,6 +223,7 @@ public class EventService : IEventService
                 {
                     Id = updateEventDto.Id,
                     EventName = updateEventDto.EventName,
+                    Description = updateEventDto.Description,
                     StartingDate = updateEventDto.StartingDate,
                     EndingDate = updateEventDto.EndingDate,
                     HeadCount = updateEventDto.HeadCount,

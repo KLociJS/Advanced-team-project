@@ -24,6 +24,7 @@ export default function CardDisplayer({ isOpen, setIsOpen, events }) {
             recommendedAge={e.recommendedAge}
             startingDate={e.startingDate}
             endingDate={e.endingDate}
+            description={e.description}
           />
         ))}
     </section>

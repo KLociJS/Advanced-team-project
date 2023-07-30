@@ -10,10 +10,9 @@ export default function CreateEvent() {
   const navigate = useNavigate()
 
   const [eventName, setEventName] = useState('')
+  const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
-  const [categoryId, setCategoryId] = useState('')
   const [location, setLocation] = useState('')
-  const [locationId, setLocationId] = useState('')
   const [price, setPrice] = useState('')
   const [maxHeadCount, setMaxHeadCount] = useState('')
   const [recommendedAge, setRecommendedAge] = useState('')
@@ -29,8 +28,9 @@ export default function CreateEvent() {
     const endingDateTime = new Date(endingDate).toISOString().replace(/\d{2}:\d{2}/g,endingTime)
 
     const newEvent = {
-      categoryId,
-      locationId,
+      category,
+      location,
+      description,
       eventName,
       startingDate : startingDateTime,
       endingDate: endingDateTime,
@@ -62,18 +62,17 @@ export default function CreateEvent() {
     <div className='event-form'>
       <h1>Create New Event</h1>
       <Input label='Event name' inputValue={eventName} setInputValue={setEventName}/>
+      <Input label='Description' inputValue={description} setInputValue={setDescription} />
       <AutoCompleteInput 
         label='Category'
         inputValue={category}
         setInputValue={setCategory}
-        setId={setCategoryId}
         url={categoriesUrl}
       />
       <AutoCompleteInput 
         label='Location'
         inputValue={location}
         setInputValue={setLocation}
-        setId={setLocationId}
         url={locationsUrl}
       />
       <Input label='Price' type='number' inputValue={price} setInputValue={setPrice}/>

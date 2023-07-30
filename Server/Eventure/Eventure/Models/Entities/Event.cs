@@ -9,6 +9,8 @@ public class Event
     public long Id { get; set; }
 
     public string EventName { get; set; } = string.Empty;
+    
+    public string Description { get; set; } = string.Empty;
 
     public DateTime StartingDate { get; set; }
     
