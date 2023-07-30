@@ -9,15 +9,21 @@
     box-shadow: 1px 1px 5px var(--text-secondary);
 
     width: 200px;
+    height: 320px;
 }
 
 .event-card h1{
     text-align: center;
+    font-size: 1.5rem;
 }
 .event-card h3, .event-card>p{
     display: flex;
     gap: 0.25rem;
     align-items: center;
+}
+.event-card h3{
+    font-size: 1rem;
+    font-weight: 400;
 }
 .event-card p{
     font-size: 0.75rem;
