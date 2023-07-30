@@ -1,30 +1,60 @@
 import React, { useState } from 'react'
 import './SearchForm.css'
-import { DateInput, Input } from 'Components'
 
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2'
+
 import { 
   PrimaryButton,
   SecondaryButton,
+  DateInput, 
+  Input, 
+  AutoCompleteInput,
  } from 'Components'
 
+export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
 
-export default function SearchForm({isOpen, setIsOpen}) {
+    const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
+    const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
 
     const [eventName, setEventName] = useState('')
     const [location, setLocation] = useState('')
+    const [locationId,setLocationId] = useState()
     const [distance, setDisctance] = useState('')
     const [category, setCategory] = useState('')
+    const [categoryId, setCategoryId] = useState()
     const [minPrice,setMinPrice] = useState('')
     const [maxPrice, setMaxPrice] = useState('')
     const [startDate, setStartDate] = useState('')
+    const [startTime, setStartTime] = useState('00:00')
     const [endDate, setEndDate] = useState('')
+    const [endTime, setEndTime] = useState('00:00')
+
+    //dictionary with params, iterating throught and concatenating url
 
     const handleSearchSubmit = (e) =>{
         e.preventDefault()
         setIsOpen(false)
 
+        const startDateTime = startDate ? new Date(startDate).toISOString().replace(/\d{2}:\d{2}/g,startTime) : ''
+        const endDateTime = endDate ? new Date(endDate).toISOString().replace(/\d{2}:\d{2}/g,endTime) : ''
+        
+
+        const eventNameParam = eventName ? `?eventName=${eventName}` : ''
+        const locationParam = location ? `&location=${location}` : ''
+        const categoryParam = category ? `&category=${category}` : ''
+        const minPriceParam = minPrice ? `&minPrice=${minPrice}` : ''
+        const maxPriceParam = maxPrice ? `&maxPrice=${maxPrice}` : ''
+        const startDateParam = startDate ? `?startingDate=${startDateTime}` : ''
+        const endDateParam = endDate ? `&endingDate=${endDateTime}` : ''
+
         console.log(eventName,location,distance,category,minPrice,maxPrice,startDate, endDate)
+        fetch(`${url}${eventNameParam}${startDateParam}${locationParam}${categoryParam}${minPriceParam}${maxPriceParam}${endDateParam}`)
+        .then(res=>res.json())
+        .then(data=>{
+        console.log(data.events);
+        setEvents(data.events)
+        })
+        .catch(console.log)
     }
 
     return (
@@ -35,11 +65,23 @@ export default function SearchForm({isOpen, setIsOpen}) {
             </h1>
             <p className='mb-2 secondary-text'>Leaving a field empty doesnt filter by the given property.</p>
             <Input label='Event Name' inputValue={eventName} setInputValue={setEventName}/>
-            <Input label='Location' inputValue={location} setInputValue={setLocation} />
+            <AutoCompleteInput 
+            label='Location'
+            inputValue={location}
+            setInputValue={setLocation}
+            setId={setLocationId}
+            url={locationsUrl}
+            />
             <Input label='Max Distance From Location' type='number' inputValue={distance} setInputValue={setDisctance}/>
-            <Input label='Category' inputValue={category} setInputValue={setCategory} />
-            <DateInput label='Starting Date' inputValue={startDate} setInputValue={setStartDate}/>
-            <DateInput label='Ending Date' inputValue={endDate} setInputValue={setEndDate} />
+            <AutoCompleteInput 
+            label='Category'
+            inputValue={category}
+            setInputValue={setCategory}
+            setId={setCategoryId}
+            url={categoriesUrl}
+            />
+            <DateInput label='Starting Date' dateValue={startDate} setDateValue={setStartDate} time={startTime} setTime={setStartTime}/>
+            <DateInput label='Ending Date' dateValue={endDate} setDateValue={setEndDate} time={endTime} setTime={setEndTime}/>
             <div className='flex-container mb-1'>
             <Input label='Min Price' type='number' inputValue={minPrice} setInputValue={setMinPrice} />
             <Input label='Max Price' type='number' inputValue={maxPrice} setInputValue={setMaxPrice} />

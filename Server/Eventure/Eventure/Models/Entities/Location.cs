@@ -3,6 +3,7 @@ using CsvHelper;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Eventure.Models.Entities;
 
@@ -13,6 +14,7 @@ public class Location
     public string Name { get; set; } = string.Empty;
     public Double Latitude { get; set; }
     public Double Longitude { get; set; }
+    [JsonIgnore]
     public List<Event> Events { get; set; } = new List<Event>();
     
     public static List<Location> LoadLocationsFromCsv(string filePath)

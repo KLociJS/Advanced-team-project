@@ -1,5 +1,6 @@
 .search-form{
     position: absolute;
+    background-color: #fffffffa;
     height: calc(100vh - 60px);
     padding: 2rem;
     width: min(350px,100%);

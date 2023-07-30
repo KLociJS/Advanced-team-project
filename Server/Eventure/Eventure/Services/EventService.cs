@@ -1,6 +1,8 @@
-﻿using Eventure.Models;
+﻿using System.Globalization;
+using Eventure.Models;
 using Eventure.Models.Entities;
 using Eventure.Models.RequestDto;
+using Eventure.Models.ResponseDto;
 using Eventure.Models.Results;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,12 +20,11 @@ public class EventService : IEventService
     {
         try
         {
-            var utcTimeZone = TimeZoneInfo.Utc;
             var newEvent = new Event()
             {
                 EventName = createEventDto.EventName,
-                StartingDate = DateTimeOffset.ParseExact(createEventDto.StartingDate, "yyyy-MM-dd", null).DateTime,
-                EndingDate = DateTimeOffset.ParseExact(createEventDto.EndingDate, "yyyy-MM-dd", null).DateTime,
+                StartingDate = Convert.ToDateTime(createEventDto.StartingDate).ToUniversalTime(),
+                EndingDate = Convert.ToDateTime(createEventDto.EndingDate).ToUniversalTime(),
                 HeadCount = createEventDto.HeadCount,
                 RecommendedAge = createEventDto.RecommendedAge,
                 Price = createEventDto.Price,
@@ -31,9 +32,6 @@ public class EventService : IEventService
                 CategoryId = createEventDto.CategoryId,
                 UserId = createEventDto.UserId
             };
-            
-            newEvent.StartingDate = TimeZoneInfo.ConvertTimeToUtc(newEvent.StartingDate, utcTimeZone);
-            newEvent.EndingDate = TimeZoneInfo.ConvertTimeToUtc(newEvent.EndingDate, utcTimeZone);
 
             await _context.Events.AddAsync(newEvent);
             
@@ -47,7 +45,7 @@ public class EventService : IEventService
         }
         
     }
-    public async Task<GetEventResult> GetEventByIdAsync(string id)
+    public async Task<GetEventResult> GetEventByIdAsync(long id)
     {
         try
         {
@@ -66,11 +64,89 @@ public class EventService : IEventService
         };
     }
 
+    public async Task<List<Event>> GetEventsAsync()
+    {
+        try
+        {
+            var events = _context.Events
+                .Include(e => e.Location)
+                .Include(e => e.Category)
+                .ToList();
+            return events;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<List<Event>> SearchEventAsync(
+        string? eventName, 
+        string? location, 
+        string? category, 
+        string? startingDate, 
+        string? endingDate, 
+        double? minPrice, 
+        double? maxPrice)
+    {
+        try
+        {
+            IQueryable<Event> events = _context.Events
+                .Include(e => e.Location)
+                .Include(e => e.Category);
+            
+            if (eventName != null)
+            {
+                events = events.Where(e => e.EventName.ToLower().Contains(eventName.ToLower()));
+            }
+
+            if (location != null)
+            {
+                events = events.Where(e => e.Location!.Name.ToLower().Contains(location.ToLower()));
+            }
+
+            if (category != null)
+            {
+                events = events.Where(e => e.Category!.Name.ToLower().Contains(category.ToLower()));
+            }
+
+            if (minPrice != null)
+            {
+                events = events.Where(e => e.Price > minPrice);
+            }
+            
+            if (maxPrice != null)
+            {
+                events = events.Where(e => e.Price < maxPrice);
+            }
+
+            if (startingDate != null)
+            {
+                var startingDateUtc = Convert.ToDateTime(startingDate).ToUniversalTime();
+                events = events.Where(e => e.StartingDate > startingDateUtc);
+            }
+            
+            if (endingDate != null)
+            {
+                var endingDateUtc = Convert.ToDateTime(endingDate).ToUniversalTime();
+                events = events.Where(e => e.EndingDate < endingDateUtc);
+            }
+            
+            return await events.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
     public async Task<GetEventResult> GetRandomEvent()
     {
         try
         {
-            var allEvents = _context.Events.ToListAsync().Result;
+            var allEvents = await _context.Events.ToListAsync();
             if (allEvents.Count == 0)
             {
                 return GetEventResult.Failed("No event found");
@@ -90,7 +166,7 @@ public class EventService : IEventService
         ;
     }
 
-    public async Task<EventActionResult> DeleteEvent(string id)
+    public async Task<EventActionResult> DeleteEvent(long id)
     {
         try
         {
@@ -111,27 +187,45 @@ public class EventService : IEventService
         }
     }
 
-    public async Task<GetEventResult> UpdateEvent(Event eventToUpdate)
+    public async Task<UpdateEventResult> UpdateEvent(UpdateEventDto updateEventDto)
     {
         try
         {
-
-            var eventFound = _context.Events.FindAsync(eventToUpdate.Id).Result;
+            var eventFound = await _context.Events
+                .Include(e => e.Location) // Include the Location
+                .Include(e => e.Category) // Include the Category
+                .FirstOrDefaultAsync(e => e.Id == updateEventDto.Id);
             if (eventFound != null)
             {
-                eventFound.Location = eventToUpdate.Location;
-                eventFound.Date = eventToUpdate.Date;
-                eventFound.Duration = eventToUpdate.Duration;
-                eventFound.Category = eventToUpdate.Category;
-
-            
-            
+                eventFound.LocationId = updateEventDto.LocationId;
+                eventFound.CategoryId = updateEventDto.CategoryId;
+                eventFound.EventName = updateEventDto.EventName;
+                eventFound.StartingDate = updateEventDto.StartingDate;
+                eventFound.EndingDate = updateEventDto.EndingDate;
+                eventFound.HeadCount = updateEventDto.HeadCount;
+                eventFound.RecommendedAge = updateEventDto.RecommendedAge;
+                eventFound.Price = updateEventDto.Price;
+                
                 _context.Events.Update(eventFound);
                 await _context.SaveChangesAsync();
-                return GetEventResult.Succeed("Event updated successfully", eventFound);
+                
+                var resultEvent = new EventPreviewResponseDto()
+                {
+                    Id = updateEventDto.Id,
+                    EventName = updateEventDto.EventName,
+                    StartingDate = updateEventDto.StartingDate,
+                    EndingDate = updateEventDto.EndingDate,
+                    HeadCount = updateEventDto.HeadCount,
+                    RecommendedAge = updateEventDto.RecommendedAge,
+                    Price = updateEventDto.Price,
+                    Location = eventFound.Location,
+                    Category = eventFound.Category
+                };
+                
+                return UpdateEventResult.Success(resultEvent);
             }
 
-            return GetEventResult.Failed("Couldn't find event by id");
+            return UpdateEventResult.Fail();
         }
         catch (Exception e)
         {

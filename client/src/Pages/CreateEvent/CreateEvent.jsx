@@ -1,11 +1,13 @@
 import { AutoCompleteInput, DateInput, Input, PrimaryButton, SecondaryButton } from 'Components'
 import React, { useState } from 'react'
-import { json } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function CreateEvent() {
 
   const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
   const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
+
+  const navigate = useNavigate()
 
   const [eventName, setEventName] = useState('')
   const [category, setCategory] = useState('')
@@ -16,17 +18,22 @@ export default function CreateEvent() {
   const [maxHeadCount, setMaxHeadCount] = useState('')
   const [recommendedAge, setRecommendedAge] = useState('')
   const [startingDate, setStartingDate] = useState('')
+  const [startingTime, setStartingTime] = useState('00:00')
   const [endingDate, setEndingDate] = useState('')
+  const [endingTime, setEndingTime] = useState('00:00')
 
   const clickHandler = (e) => {
     e.preventDefault()
+
+    const startingDateTime = new Date(startingDate).toISOString().replace(/\d{2}:\d{2}/g,startingTime)
+    const endingDateTime = new Date(endingDate).toISOString().replace(/\d{2}:\d{2}/g,endingTime)
 
     const newEvent = {
       categoryId,
       locationId,
       eventName,
-      startingDate,
-      endingDate,
+      startingDate : startingDateTime,
+      endingDate: endingDateTime,
       headcount : maxHeadCount,
       price,
       recommendedAge,
@@ -43,7 +50,10 @@ export default function CreateEvent() {
       body: JSON.stringify(newEvent)
     })
     .then(res=>res.json())
-    .then(data=>console.log(data))
+    .then(data=>{
+      console.log(data)
+      navigate('/events')
+    })
     .catch(console.log)
     
   }
@@ -69,8 +79,8 @@ export default function CreateEvent() {
       <Input label='Price' type='number' inputValue={price} setInputValue={setPrice}/>
       <Input label='Max Headcount' type='number' inputValue={maxHeadCount} setInputValue={setMaxHeadCount}/>
       <Input label='Recommended Age' type='number' inputValue={recommendedAge} setInputValue={setRecommendedAge}/>
-      <DateInput label='Startin Date' inputValue={startingDate} setInputValue={setStartingDate}/>
-      <DateInput label='Ending Date' inputValue={endingDate} setInputValue={setEndingDate}/>
+      <DateInput label='Startin Date' dateValue={startingDate} setDateValue={setStartingDate} time={startingTime} setTime={setStartingTime}/>
+      <DateInput label='Ending Date' dateValue={endingDate} setDateValue={setEndingDate} time={endingTime} setTime={setEndingTime}/>
       <PrimaryButton text='Create' clickHandler={clickHandler} />
       <SecondaryButton text='Cancel' />
     </div>

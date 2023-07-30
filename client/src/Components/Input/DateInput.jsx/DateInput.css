@@ -1,3 +1,19 @@
 .input-date::-webkit-calendar-picker-indicator {
     border-radius: 5px;
 }
+
+.date-input{
+    display: flex;
+    gap: 0.5rem;
+}
+
+.date-input-control{
+    border: 1px solid #002147;
+    border-radius: 5px;
+    padding: 0.5rem 0.5rem;
+    width: 138px;
+}
+.date-input-control:focus{
+    border: 1px solid transparent;
+    outline: 2px solid #FF9900;
+}

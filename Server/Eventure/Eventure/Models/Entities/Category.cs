@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
+using System.Text.Json.Serialization;
 using CsvHelper;
 using Eventure.Models.Enums;
 
@@ -11,7 +12,7 @@ public class Category
     public long Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
-    
+    [JsonIgnore]
     public List<Event> Events = new List<Event>();
     
     public static List<Category> LoadCategoriesFromCsv(string filePath)
