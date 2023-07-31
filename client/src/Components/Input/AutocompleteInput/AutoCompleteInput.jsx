@@ -1,39 +1,36 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
-export default function AutoCompleteInput({ inputValue, setInputValue, setId, label, type, url }) {
+const fetchSuggestions = async (url) =>{
+    const suggestionsResponse = await fetch(url)
+    return await suggestionsResponse.json()
+}
+
+export default function AutoCompleteInput({ inputValue, setInputValue, label, type, url }) {
 
     const [suggestions, setSuggestions] = useState([])
-
     const [isFocused, setIsFocused] = useState(false)
 
     const handleFocus = () => setIsFocused(true)
     const handleBlur = () => setIsFocused(false)
   
     const isActive = isFocused || inputValue ? 'active' : ''
-
-    console.log(suggestions);
+    
+    let debounceRef = useRef();
 
     const handleInputChange = async(e) => {
         const value = e.target.value
         setInputValue(value)
 
-        if(value.length>2){
-            const currSuggestions = await fetchSuggestions(url+value)
-            console.log(currSuggestions);
-            setSuggestions(currSuggestions.data)
-
-            const isLoactionMatches = currSuggestions.data.find(l=>l.name===value)
-            if(isLoactionMatches){
-                console.log('c');
-                const suggestionId = currSuggestions.data.find(s=>s.name===value).id;
-                setId(suggestionId)
+        if (value.length > 2) {
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current)
             }
-        }
-    }
 
-    const fetchSuggestions = async (url) =>{
-        const suggestionsResponse = await fetch(url)
-        return await suggestionsResponse.json()
+            debounceRef.current = setTimeout(async () => {
+                const currSuggestions = await fetchSuggestions(url + value);
+                setSuggestions(currSuggestions.data)
+            }, 300)
+        }
     }
   
     return (

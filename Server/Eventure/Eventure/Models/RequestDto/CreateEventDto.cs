@@ -5,13 +5,14 @@ namespace Eventure.Models.RequestDto;
 public class CreateEventDto
 {
     public string EventName { get; set; } = string.Empty;
-    public string StartingDate { get; set; }
-    public string EndingDate { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public string StartingDate { get; set; } = string.Empty;
+    public string EndingDate { get; set; } = string.Empty;
     public int HeadCount { get; set; }
     public int RecommendedAge { get; set; }
     public int Price { get; set; }
-    public long LocationId { get; set; }
-    public long CategoryId { get; set; }
+    public string Location { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
     public string UserId { get; set; } = string.Empty;
 
 }

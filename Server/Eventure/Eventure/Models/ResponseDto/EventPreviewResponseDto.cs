@@ -6,6 +6,8 @@ public class EventPreviewResponseDto
 {
     public long Id { get; set; }
     public string EventName { get; set; } = string.Empty;
+    
+    public string Description { get; set; } = string.Empty;
     public DateTime StartingDate { get; set; }
     public DateTime EndingDate { get; set; }
     public int HeadCount { get; set; }

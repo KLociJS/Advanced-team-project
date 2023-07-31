@@ -13,11 +13,13 @@ export default function EventPreviewCard(
         startingDate,
         location,
         price,
-        recommendedAge
+        recommendedAge,
+        description,
     }){
   return (
     <section className='event-card'>
         <h1 className='mb-1'>{name}</h1>
+        <h3>{description}</h3>
         <h3>
             <CiLocationOn className='card-icon' />
             {location}
