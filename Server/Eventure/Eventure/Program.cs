@@ -28,8 +28,8 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddDbContext<EventureContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")) );
 
-builder.Services.AddIdentity<User, IdentityRole<long>>()
-    .AddRoles<IdentityRole<long>>()
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<EventureContext>();
 
 builder.Services.Configure<IdentityOptions>(options => options.SignIn.RequireConfirmedEmail = false);
