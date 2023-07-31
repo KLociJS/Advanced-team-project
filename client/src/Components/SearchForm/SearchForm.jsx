@@ -39,6 +39,7 @@ export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
         const searchParamsDict = {
             eventName ,
             location,
+            distance,
             category,
             minPrice,
             maxPrice,
