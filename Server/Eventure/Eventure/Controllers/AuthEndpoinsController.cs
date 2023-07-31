@@ -1,10 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Eventure.Services;
+using Microsoft.AspNetCore.Mvc;
 namespace Eventure.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class AuthEndpointsController : ControllerBase
 {
+    private readonly IAuthService _authService;
+
+    public AuthEndpointsController(IAuthService authService)
+    {
+        _authService = authService;
+    }
+
     //Login Endpoint
     [HttpPost]
     [Route("/api/login")]
