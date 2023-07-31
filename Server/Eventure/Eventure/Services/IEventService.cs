@@ -11,6 +11,7 @@ public interface IEventService
     Task<UpdateEventResult>  UpdateEvent(UpdateEventDto updateEventDto);
     Task<List<Event>> SearchEventAsync(string? eventName, 
         string? location, 
+        double? distance,
         string? category, 
         string? startingDate, 
         string? endingDate, 
@@ -21,4 +22,5 @@ public interface IEventService
     List<Category> GetCategory(string category);
     Task<GetEventResult> GetEventByIdAsync(long id);
     Task<GetEventResult> GetRandomEvent();
+    
 }

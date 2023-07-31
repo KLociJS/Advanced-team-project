@@ -94,7 +94,8 @@ public class EventService : IEventService
 
     public async Task<List<Event>> SearchEventAsync(
         string? eventName, 
-        string? location, 
+        string? location,
+        double? distance,
         string? category, 
         string? startingDate, 
         string? endingDate, 
@@ -112,9 +113,17 @@ public class EventService : IEventService
                 events = events.Where(e => e.EventName.ToLower().Contains(eventName.ToLower()));
             }
 
-            if (location != null)
+            if (location != null && distance == null)
             {
                 events = events.Where(e => e.Location!.Name.ToLower().Contains(location.ToLower()));
+            }
+            
+            if (location != null && distance != null)
+            {
+                var originLocation = await _context.Locations.FirstOrDefaultAsync(l =>l.Name == location );
+                var allLocations = await _context.Locations.ToListAsync();
+                var goodLocations = allLocations.Where(l => CalculateDistance(originLocation, l)<= distance);
+                events = events.Where(e => goodLocations.Contains(e.Location));
             }
 
             if (category != null)
@@ -257,6 +266,32 @@ public class EventService : IEventService
         var formattedCategory = category.Substring(0, 1).ToUpper() + category.Substring(1);
         return _context.Categories.Where(c => c.Name.Contains(formattedCategory)).ToList();
     }
-
     
+    
+    
+        private const double EarthRadiusKm = 6371.0;
+        private static double DegreesToRadians(double degrees)
+        {
+            return degrees * Math.PI / 180.0;
+        }
+        public static double CalculateDistance(Location originLocation, Location goodLocation)
+        {
+            double lat1 = originLocation.Latitude;
+            double lat2 = goodLocation.Latitude;
+            double lon1 = originLocation.Longitude;
+            double lon2 = goodLocation.Longitude;
+            
+            double dLat = DegreesToRadians(lat2 - lat1);
+            double dLon = DegreesToRadians(lon2 - lon1);
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
+                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+            double distance = EarthRadiusKm * c;
+            return distance;
+        }
+   
 }

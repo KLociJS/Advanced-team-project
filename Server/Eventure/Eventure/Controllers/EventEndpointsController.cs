@@ -133,6 +133,7 @@ public class EventEndpointsController: ControllerBase
     public async Task<ActionResult<List<Event>>> SearchEvent(
         string? eventName, 
         string? location, 
+        double? distance,
         string? category, 
         string? startingDate, 
         string? endingDate, 
@@ -142,6 +143,7 @@ public class EventEndpointsController: ControllerBase
         var events = await _eventService.SearchEventAsync(
             eventName, 
             location, 
+            distance,
             category, 
             startingDate, 
             endingDate, 
