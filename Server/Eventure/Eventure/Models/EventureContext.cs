@@ -1,5 +1,6 @@
 using System.Reflection;
 using Eventure.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,7 @@ public class EventureContext : IdentityDbContext<User>
     {
     }
 
-    public static void Seed(EventureContext context)
+    public static async Task Seed(EventureContext context, UserManager<User> userManager)
     {
         if (!context.Locations.Any())
         {
@@ -25,7 +26,7 @@ public class EventureContext : IdentityDbContext<User>
             var locations = Location.LoadLocationsFromCsv(fileName);
 
             context.Locations.AddRange(locations);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
         if (!context.Categories.Any())
@@ -34,7 +35,27 @@ public class EventureContext : IdentityDbContext<User>
 
             var categories = Category.LoadCategoriesFromCsv(fileName);
             context.Categories.AddRange(categories);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
+
+        var oldUsers = await userManager.Users.ToListAsync();
+        
+        foreach (var user in oldUsers)
+        {
+            await userManager.DeleteAsync(user);
+        }
+
+        var newUsers = new List<User>()
+        {
+            new() { UserName = "Loci", Email = "loci@gmail.com" },
+            new () { UserName = "Zsofi", Email = "zsofi@gmail.com" },
+            new () { UserName = "Bianka", Email = "bianka@gmail.com" }
+        };
+        
+        foreach (var newUser in newUsers)
+        {
+            await userManager.CreateAsync(newUser, "Abcd@1234");
+        }
+
     }
 }
