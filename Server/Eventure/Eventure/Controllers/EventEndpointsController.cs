@@ -194,4 +194,5 @@ public class EventEndpointsController: ControllerBase
             return StatusCode(500, result);
         }
     }
+    
 }
