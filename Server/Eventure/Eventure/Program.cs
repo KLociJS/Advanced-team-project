@@ -78,7 +78,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetService<EventureContext>();
-    EventureContext.Seed(db!);
+    var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
+    var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+    await EventureContext.Seed(db!, userManager!, roleManager!);
 }
 
 // Configure the HTTP request pipeline.
@@ -92,6 +94,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
