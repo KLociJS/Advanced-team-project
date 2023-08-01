@@ -78,7 +78,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetService<EventureContext>();
-    EventureContext.Seed(db!);
+    var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
+    await EventureContext.Seed(db!, userManager!);
 }
 
 // Configure the HTTP request pipeline.
