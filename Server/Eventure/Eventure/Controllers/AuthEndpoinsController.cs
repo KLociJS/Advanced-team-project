@@ -1,4 +1,5 @@
-﻿using Eventure.Services;
+﻿using Eventure.Models.RequestDto;
+using Eventure.Services;
 using Microsoft.AspNetCore.Mvc;
 namespace Eventure.Controllers;
 
@@ -34,8 +35,14 @@ public class AuthEndpointsController : ControllerBase
     //Registration
     [HttpPost]
     [Route("/api/signup")]
-    public async Task<IActionResult> Signup()
+    public async Task<IActionResult> Signup(RegisterUserDto registerUserDto)
     {
-        return Ok("Registered successfully");
+        var registrationResult = await _authService.RegisterUser(registerUserDto);
+        if (registrationResult.Succeeded)
+        {
+        return Ok(new {Message = "Registered succesfully"});
+        }
+
+        return BadRequest(new {registrationResult.Message} );
     }
 }
