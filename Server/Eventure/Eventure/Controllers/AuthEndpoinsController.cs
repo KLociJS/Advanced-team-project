@@ -37,12 +37,12 @@ public class AuthEndpointsController : ControllerBase
     [Route("/api/signup")]
     public async Task<IActionResult> Signup(RegisterUserDto registerUserDto)
     {
-        var isRegistrationSuccessful = await _authService.RegisterUser(registerUserDto);
-        if (isRegistrationSuccessful)
+        var registrationResult = await _authService.RegisterUser(registerUserDto);
+        if (registrationResult.Succeeded)
         {
         return Ok(new {Message = "Registered succesfully"});
         }
 
-        return BadRequest();
+        return BadRequest(new {registrationResult.Message} );
     }
 }

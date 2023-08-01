@@ -8,6 +8,8 @@ export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const[isRegistrationSuccessful, setIsRegistrationSuccesful] = useState(false);
+  const [error, setError] = useState("");
     
  const handleSubmit = () => {
   const userData = {
@@ -22,9 +24,27 @@ headers: {
 },
 body: JSON.stringify(userData)
   })
-  .then(res => res.json())
+  .then(res => {
+    if(res.ok){
+      setIsRegistrationSuccesful(true);
+    }
+    else{
+      throw res;
+    }
+    return res.json()
+  })
   .then(res => console.log(res))
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.log(err instanceof Response);
+    if(err instanceof Response){
+      err.json()
+      .then(res => setError(res.message[0]));
+    }
+    else{
+      console.error(err);
+    }
+
+  });
 
   
  }
@@ -36,6 +56,8 @@ body: JSON.stringify(userData)
         <Input label={"Email"} inputValue={email} setInputValue={setEmail}/>
         <Input label={"Password"} type={"password"} inputValue={password} setInputValue={setPassword}/>
         <PrimaryButton text={"Register"} clickHandler={handleSubmit} />
+        {isRegistrationSuccessful ? (<p>Registration successful</p>) : null}
+        {error ? <p>{error}</p> : null}
     </div>    
   );
   
