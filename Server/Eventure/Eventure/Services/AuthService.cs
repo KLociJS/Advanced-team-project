@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Eventure.Services;
 
-public class AuthService:IAuthService
+public class AuthService : IAuthService
 {
     private readonly UserManager<User> _userManager;
 
@@ -22,22 +22,29 @@ public class AuthService:IAuthService
             Email = registerUserDto.Email
         };
         var registerResult = await _userManager.CreateAsync(user, registerUserDto.Password);
-        if (registerResult.Succeeded)
+        var asignRoleResult = await _userManager.AddToRoleAsync(user, "User");
+
+        if (registerResult.Succeeded && asignRoleResult.Succeeded)
         {
             return (new RegisterResult()
             {
                 Succeeded = true,
-                Message = new List<string>{
-                "Registration successful"
+                Message = new List<string>
+                {
+                    "Registration successful"
                 }
             });
         }
-            return (new RegisterResult()
-            {
-                Succeeded = false,
-                Message = registerResult.Errors.Select(e => e.Description).ToList()
-            });
-        
-        
+
+        if (registerResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(user);
+        }
+
+        return (new RegisterResult()
+        {
+            Succeeded = false,
+            Message = registerResult.Errors.Select(e => e.Description).ToList()
+        });
     }
 }
