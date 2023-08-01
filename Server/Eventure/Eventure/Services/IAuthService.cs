@@ -1,8 +1,9 @@
 using Eventure.Models.RequestDto;
+using Eventure.Models.Results;
 
 namespace Eventure.Services;
 
 public interface IAuthService
 {
-    Task<bool> RegisterUser(RegisterUserDto registerUserDto);
+    Task<RegisterResult> RegisterUser(RegisterUserDto registerUserDto);
 }
