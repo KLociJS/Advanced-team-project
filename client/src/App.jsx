@@ -5,6 +5,8 @@ import {
     RouterProvider,
 } from 'react-router-dom'
 
+import AuthContext from 'Context'
+
 import './Layout.css'
 import './Pages/index.css'
 import './Typography.css'
@@ -21,6 +23,7 @@ import {
   Login,
   Signup,
 } from 'Pages'
+import { useState } from 'react'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -38,9 +41,12 @@ const router = createBrowserRouter(
   )
 
 export default function App() {
+
+  const [user,setUser] = useState(null)
+
   return (
-    <RouterProvider router={router}>
-        <div>App</div>
-    </RouterProvider>
+    <AuthContext.Provider value={{ user,setUser }}>
+      <RouterProvider router={router} />
+    </AuthContext.Provider>
   )
 }
