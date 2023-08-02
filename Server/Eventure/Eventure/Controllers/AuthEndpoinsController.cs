@@ -89,7 +89,7 @@ public class AuthEndpointsController : ControllerBase
         
         return Ok(new
         {
-            Message = "Registered succesfully",
+            Message = registrationResult.Message,
             User = registerUserDto
         });
         
