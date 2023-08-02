@@ -36,8 +36,7 @@ export default function CreateEvent() {
       endingDate: endingDateTime,
       headcount : maxHeadCount,
       price,
-      recommendedAge,
-      userID: '1'
+      recommendedAge
     }
 
     console.log(newEvent);
@@ -47,6 +46,7 @@ export default function CreateEvent() {
       headers: {
         'content-type' : 'application/json'
       },
+      credentials: "include",
       body: JSON.stringify(newEvent)
     })
     .then(res=>res.json())
