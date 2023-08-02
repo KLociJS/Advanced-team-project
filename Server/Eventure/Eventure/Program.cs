@@ -27,7 +27,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddDbContext<EventureContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")) );
-builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddRoles<IdentityRole>()
@@ -64,6 +63,7 @@ builder.Services.AddAuthentication(options =>
             {
                 OnMessageReceived = context =>
                 {
+                    Console.WriteLine(context.Request.Cookies["token"]);
                     context.Token = context.Request.Cookies["token"];
                     return Task.CompletedTask;
                 }

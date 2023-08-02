@@ -81,27 +81,30 @@ public class AuthService : IAuthService
 
     public async Task<string> GetJwtTokenAsync(User user, string password)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName)
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             // Add other claims as needed
         };
-
-        var tokenDescriptor = new SecurityTokenDescriptor
+        
+        var roles = await _userManager.GetRolesAsync(user);
+        
+        foreach (var role in roles)
         {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(1), // Set token expiration time
-            SigningCredentials = credentials
-        };
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+        
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        var token = new JwtSecurityToken(
+            issuer: _configuration["JWT:ValidIssuer"],
+            audience:_configuration["JWT:ValidAudience"],
+            expires: DateTime.Now.AddDays(14),
+            claims:claims,
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+        );
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-
-        return tokenHandler.WriteToken(securityToken);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
 
@@ -111,5 +114,7 @@ public class AuthService : IAuthService
         var roles = await _userManager.GetRolesAsync(user);
         return roles;
     }
+    
+
 
 }

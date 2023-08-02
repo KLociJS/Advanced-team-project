@@ -2,6 +2,7 @@ using Eventure.Models.Entities;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
 using Eventure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace Eventure.Controllers;
 
@@ -16,12 +17,14 @@ public class EventEndpointsController: ControllerBase
         _eventService = eventService;
     }
 
-    [HttpPost()]
+    [Authorize(Roles = "User")]
+    [HttpPost]
     public async Task<ActionResult> CreateEvent(CreateEventDto createEventDto)
     {
         try
         {
-            var createEventResult = await _eventService.CreateEventAsync(createEventDto);
+            var userName = HttpContext.User.Identity!.Name;
+            var createEventResult = await _eventService.CreateEventAsync(createEventDto, userName!);
             if (createEventResult.Succeeded)
             {
                 return Ok(createEventResult.Response);

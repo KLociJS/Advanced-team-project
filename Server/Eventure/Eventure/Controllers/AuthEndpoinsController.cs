@@ -3,7 +3,7 @@ using Eventure.Models.ResponseDto;
 using Eventure.Models.Results;
 using Eventure.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+
 
 namespace Eventure.Controllers;
 
@@ -36,7 +36,7 @@ public class AuthEndpointsController : ControllerBase
 
             if (authResult.Succeeded)
             {
-                _httpContextAccessor.HttpContext.Response.Cookies.Append("token", authResult.Token, new CookieOptions()
+                HttpContext.Response.Cookies.Append("token", authResult.Token, new CookieOptions()
                 {
                     SameSite = SameSiteMode.None,
                     Expires = DateTimeOffset.Now.AddDays(14),
@@ -70,7 +70,25 @@ public class AuthEndpointsController : ControllerBase
     [Route("/api/logout")]
     public async Task<IActionResult> Logout()
     {
-        return Ok();
+        try
+        {
+            HttpContext.Response.Cookies.Append("token", "", new CookieOptions()
+            {
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.Now.AddDays(-1),
+                IsEssential = true,
+                Secure = true,
+                HttpOnly = true
+            });
+            
+            Console.WriteLine("Logout successful.");
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error during logout: {e}");
+            return StatusCode(500, new { Message = "An error occurred during logout." });
+        }
     }
 
 
