@@ -30,6 +30,7 @@ export default function Login() {
           throw new Error(data.errorMessage);
         });
       }
+      return res.json();
     })
     .then(data => {
       setUser(data)
