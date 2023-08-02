@@ -13,6 +13,6 @@ public class CreateEventDto
     public int Price { get; set; }
     public string Location { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
-    public string UserId { get; set; } = string.Empty;
+    
 
 }

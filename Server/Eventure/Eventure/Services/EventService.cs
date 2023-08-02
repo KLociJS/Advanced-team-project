@@ -3,6 +3,7 @@ using Eventure.Models.Entities;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
 using Eventure.Models.Results;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Eventure.Services;
@@ -10,15 +11,20 @@ namespace Eventure.Services;
 public class EventService : IEventService
 {
     private readonly EventureContext _context;
+    private readonly UserManager<User> _userManager;
 
-    public EventService(EventureContext eventureContext)
+    public EventService(EventureContext eventureContext, UserManager<User> userManager)
     {
         _context = eventureContext;
+        _userManager = userManager;
     }
-    public async Task<EventActionResult> CreateEventAsync(CreateEventDto createEventDto)
+    public async Task<EventActionResult> CreateEventAsync(CreateEventDto createEventDto, string userName)
     {
         try
         {
+            var user = await _userManager.FindByNameAsync(userName);
+            
+            
             var location = await _context.Locations.FirstOrDefaultAsync(l => l.Name.ToLower() == createEventDto.Location.ToLower());
             if (location == null)
             {
@@ -30,7 +36,7 @@ public class EventService : IEventService
             {
                 return EventActionResult.Failed("Couldn't find category.");
             }
-            
+
             var newEvent = new Event()
             {
                 EventName = createEventDto.EventName,
@@ -42,7 +48,7 @@ public class EventService : IEventService
                 Price = createEventDto.Price,
                 Location = location,
                 Category = category,
-                UserId = createEventDto.UserId
+                UserId = user.Id
             };
 
             await _context.Events.AddAsync(newEvent);
