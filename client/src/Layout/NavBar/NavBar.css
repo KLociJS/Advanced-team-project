@@ -23,11 +23,18 @@
     z-index: 1;
 }
 
-.nav-li{
+.nav-li {
     list-style: none;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
+.nav-user{
+    color: var(--secondary);
+    padding-right: 0.25rem;
+    border-right: 1px solid var(--secondary);
+}
 .nav-link{
     font-size: 1.5rem;
     font-weight: 600;
@@ -84,5 +91,9 @@
     }
     .align-right{
         margin-left: 0;
+    }
+
+    .nav-user{
+        display: none;
     }
 }

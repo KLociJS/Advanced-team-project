@@ -41,6 +41,7 @@ export default function Login() {
 
     })
     .then(data => {
+      setUser(data)
       console.log(data)
       navigate("/")
     })
