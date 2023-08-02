@@ -1,4 +1,5 @@
 using Eventure.Models.Entities;
+using Eventure.Models.Enums;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
 using Eventure.Services;
@@ -38,6 +39,34 @@ public class EventEndpointsController: ControllerBase
         {
             Console.WriteLine(e);
             throw;
+        }
+    }
+
+    [Authorize(Roles = "User")]
+    [HttpPost("join-event/{eventId}")]
+    public async Task<ActionResult> JoinEvent(long eventId)
+    {
+        try
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            var joinEventResult = await _eventService.JoinEvent(eventId, userName!);
+            
+            if (!joinEventResult.Succeeded && joinEventResult.Error != ErrorType.Server)
+            {
+                return BadRequest();
+            }
+
+            if (!joinEventResult.Succeeded)
+            {
+                return StatusCode(500, "An error occured on the server.");
+            }
+            
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, "An error occured on the server.");
         }
     }
 

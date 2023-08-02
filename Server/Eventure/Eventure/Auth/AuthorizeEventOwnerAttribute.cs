@@ -21,7 +21,7 @@ public class AuthorizeEventOwnerAttribute : ActionFilterAttribute
             var authenticatedUserId = context.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var eventToFind = await _eventService.GetEventByIdAsync(eventId);
 
-            if (eventToFind.EventData!.UserId != authenticatedUserId)
+            if (eventToFind.EventData!.CreatorId != authenticatedUserId)
             {
                 context.Result = new ForbidResult();
                 return;
