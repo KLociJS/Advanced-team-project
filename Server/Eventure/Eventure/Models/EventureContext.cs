@@ -69,37 +69,36 @@ public class EventureContext : IdentityDbContext<User>
         }
         
         // Seed roles
-        var roles = new List<IdentityRole>()
+        if (!roleManager.Roles.Any())
         {
-            new() { Name = "User" },
-            new() { Name = "Admin" }
-        };
-        
-        foreach (var identityRole in roles)
-        {
-            await roleManager.CreateAsync(identityRole);
+            var roles = new List<IdentityRole>()
+            {
+                new() { Name = "User" },
+                new() { Name = "Admin" }
+            };
+            
+            foreach (var identityRole in roles)
+            {
+                await roleManager.CreateAsync(identityRole);
+            }
+            
         }
 
         // Seed users
-        var oldUsers = await userManager.Users.ToListAsync();
-        
-        foreach (var oldUser in oldUsers)
+        if (!userManager.Users.Any())
         {
-            await userManager.DeleteAsync(oldUser);
+            var newUsers = new List<User>()
+            {
+                new() { UserName = "Loci", Email = "loci@gmail.com" },
+                new() { UserName = "Zsofi", Email = "zsofi@gmail.com" },
+                new() { UserName = "Bianka", Email = "bianka@gmail.com" }
+            };
+            
+            foreach (var newUser in newUsers)
+            {
+                await userManager.CreateAsync(newUser, "Abcd@1234");
+                await userManager.AddToRolesAsync(newUser, new string[]{ "User","Admin" });
+            }
         }
-        
-        var newUsers = new List<User>()
-        {
-            new() { UserName = "Loci", Email = "loci@gmail.com" },
-            new() { UserName = "Zsofi", Email = "zsofi@gmail.com" },
-            new() { UserName = "Bianka", Email = "bianka@gmail.com" }
-        };
-        
-        foreach (var newUser in newUsers)
-        {
-            await userManager.CreateAsync(newUser, "Abcd@1234");
-            await userManager.AddToRolesAsync(newUser, new string[]{ "User","Admin" });
-        }
-
     }
 }
