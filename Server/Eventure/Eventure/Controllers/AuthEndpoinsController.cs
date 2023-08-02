@@ -34,7 +34,7 @@ public class AuthEndpointsController : ControllerBase
 
             if (authResult.Succeeded)
             {
-                _httpContextAccessor.HttpContext.Response.Cookies.Append("token", authResult.Token, new CookieOptions()
+                HttpContext.Response.Cookies.Append("token", authResult.Token, new CookieOptions()
                 {
                     SameSite = SameSiteMode.None,
                     Expires = DateTimeOffset.Now.AddDays(14),
