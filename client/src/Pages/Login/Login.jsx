@@ -1,6 +1,5 @@
 import useAuth from 'Hooks/useAuth'
 import React, { useState } from 'react'
-import useAuth from 'Hooks/useAuth'
 
 import {
   Input, PrimaryButton,
@@ -21,10 +20,6 @@ export default function Login() {
       password
     };
 
-<<<<<<< HEAD
-}
-const { setUser } = useAuth()
-=======
     console.log(userData);
 
     fetch('https://localhost:7019/api/login', {
@@ -49,7 +44,7 @@ const { setUser } = useAuth()
     })
   }
 
->>>>>>> dc82f19 (chore: Add auth context)
+
   return (
     <div>
       <Input label={"Username"} inputValue={userName} setInputValue={setUserName} />
