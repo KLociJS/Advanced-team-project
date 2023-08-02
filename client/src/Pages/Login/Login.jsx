@@ -1,7 +1,11 @@
+
+import useAuth from 'Hooks/useAuth'
 import React, { useState } from 'react'
-import {  
+
+import {
   Input, PrimaryButton,
- } from 'Components'
+} from 'Components'
+
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -9,41 +13,47 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useAuth()
 
   const handleSubmit = () => {
+
     const userData = {
-      userName, 
+      userName,
       password
     };
-    console.log(userData);
-    fetch('https://localhost:7019/api/login', {
-  method: "POST",
-  credentials:"include",
-  headers: {
-    "Content-Type": "application/json" 
-  },
-  body: JSON.stringify(userData)
-  })
-  .then(res => {
-    if(res.ok){
-       return res.json()
-    }else{
-      throw res;
-    }
-   
-  })
-.then(data => {
-  console.log(data)
-  navigate("/")
-})
 
+    console.log(userData);
+
+    fetch('https://localhost:7019/api/login', {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(userData)
+    })
+    .then(res => {
+      if (res.ok) {
+        return res.json()
+      } else {
+        throw res;
+      }
+
+    })
+    .then(data => {
+      setUser(data)
+      console.log(data)
+      navigate("/")
+    })
   }
+
+
   return (
     <div>
-    <Input label={"Username"} inputValue={userName} setInputValue={setUserName}/>
-    <Input label={"Password"} type={"password"} inputValue={password} setInputValue={setPassword}/>
-    <PrimaryButton text={"Log In"} clickHandler={handleSubmit} />
-    {error ? <p>{error}</p> : null}
-</div>    
+      <Input label={"Username"} inputValue={userName} setInputValue={setUserName} />
+      <Input label={"Password"} type={"password"} inputValue={password} setInputValue={setPassword} />
+      <PrimaryButton text={"Log In"} clickHandler={handleSubmit} />
+      {error ? <p>{error}</p> : null}
+    </div>
   )
 }

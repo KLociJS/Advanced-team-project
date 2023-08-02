@@ -6,6 +6,8 @@ import SearchForm from "./SearchForm/SearchForm";
 import CardDisplayer from "./CardDisplayer/CardDisplayer";
 import AutoCompleteInput from "./Input/AutocompleteInput/AutoCompleteInput";
 import EventPreviewCard from "./EventPreviewCard/EventPreviewCard";
+import AuthorizedRender from "./AuthorizedRender/AuthorizedRender";
+import UnAuthorizedRender from "./UnAuthorizedRender/UnAuthorizedRender";
 
 export {
     Input,
@@ -16,4 +18,6 @@ export {
     CardDisplayer,
     AutoCompleteInput,
     EventPreviewCard,
+    AuthorizedRender,
+    UnAuthorizedRender,
 }
