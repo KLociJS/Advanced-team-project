@@ -9,5 +9,4 @@ public interface IAuthService
     Task<RegisterResult> RegisterUser(RegisterUserDto registerUserDto);
     Task<LoginResult> LoginAsync(LoginUserDto loginUserDto);
     Task<IList<string>> GetRolesAsync(string userName);
-
 }

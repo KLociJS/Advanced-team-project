@@ -5,11 +5,35 @@ import { Link, NavLink } from 'react-router-dom'
 import { FaBars, FaTimes } from 'react-icons/fa'
 import { AuthorizedRender, UnAuthorizedRender } from 'Components'
 import useAuth from 'Hooks/useAuth'
+import { useNavigate } from 'react-router-dom';
 
 export default function NavBar() {
 
   const [isOpen,setIsOpen] = useState(false)
   const { setUser, user } = useAuth()
+  const navigate = useNavigate();
+
+  
+  const logoutHandler= async () =>{
+      try {
+        const response = await fetch('https://localhost:7019/api/logout', {
+          method: 'POST',
+          credentials:"include"
+        });
+        if (response.ok) {
+          setUser(null);
+          localStorage.removeItem('user');
+          localStorage.clear();
+          document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          navigate('/');
+        } else {
+          console.error('Failed to logout.');
+        }
+      } catch (error) {
+        console.error('An error occurred while trying to logout.', error);
+      }
+
+  }
 
   return (
     <nav className='nav-bar'>
@@ -28,7 +52,7 @@ export default function NavBar() {
             <p className='nav-user'>Logged in as {user?.userName}</p>
           </li>
           <li className='nav-li'>
-            <Link to='login' className='nav-link' onClick={()=>setUser(null)}>Logout</Link>
+            <Link to='login' className='nav-link' onClick={logoutHandler}>Logout</Link>
           </li>
         </AuthorizedRender>
         <UnAuthorizedRender>
