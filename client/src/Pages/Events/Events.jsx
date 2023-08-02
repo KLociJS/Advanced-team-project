@@ -22,7 +22,7 @@ export default function Events() {
   return (
     <>
       <SearchForm isOpen={isOpen} setIsOpen={setIsOpen} url={searchUrl} setEvents={setEvents}/>
-      <CardDisplayer isOpen={isOpen} setIsOpen={setIsOpen} events={events} />
+      <CardDisplayer isOpen={isOpen} setIsOpen={setIsOpen} events={events} setEvents={setEvents}/>
     </>
   )
 }

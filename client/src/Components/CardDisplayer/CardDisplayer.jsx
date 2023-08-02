@@ -4,7 +4,7 @@ import './CardDisplayer.css'
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2'
 import { EventPreviewCard } from 'Components'
 
-export default function CardDisplayer({ isOpen, setIsOpen, events }) {
+export default function CardDisplayer({ isOpen, setIsOpen, events, setEvents }) {
 
   return (
     <section className='card-container'>
@@ -25,6 +25,8 @@ export default function CardDisplayer({ isOpen, setIsOpen, events }) {
             startingDate={e.startingDate}
             endingDate={e.endingDate}
             description={e.description}
+            id={e.id}
+            setEvents={setEvents}
           />
         ))}
     </section>
