@@ -48,7 +48,7 @@ public class EventService : IEventService
                 Price = createEventDto.Price,
                 Location = location,
                 Category = category,
-                UserId = user.Id
+                Creator = user
             };
 
             await _context.Events.AddAsync(newEvent);
@@ -62,6 +62,39 @@ public class EventService : IEventService
             throw;
         }
         
+    }
+
+    public async Task<JoinEventResult> JoinEvent(long eventId, string userName)
+    {
+        try
+        {
+            var eventToFind = await _context.Events.FindAsync(eventId);
+            if (eventToFind == null)
+            {
+                return JoinEventResult.EventNotFound();
+            }
+
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return JoinEventResult.UserNotFound();
+            }
+            
+            eventToFind.Participants.Add(user);
+
+            var joinEventResult = await _context.SaveChangesAsync();
+
+            if (joinEventResult > 0)
+            {
+                return JoinEventResult.Success();
+            }
+            return JoinEventResult.ServerError();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
     public async Task<GetEventResult> GetEventByIdAsync(long id)
     {
@@ -106,13 +139,50 @@ public class EventService : IEventService
         string? startingDate, 
         string? endingDate, 
         double? minPrice, 
-        double? maxPrice)
+        double? maxPrice,
+        string searchType,
+        string? userName)
     {
         try
         {
-            IQueryable<Event> events = _context.Events
-                .Include(e => e.Location)
-                .Include(e => e.Category);
+            IQueryable<Event> events = null!;
+            if (searchType == "all")
+            {
+                if (userName != null)
+                {
+                    var user = await _userManager.FindByNameAsync(userName);
+                    events = _context.Events
+                        .Include(e => e.Location)
+                        .Include(e => e.Category)
+                        .Include(e => e.Participants)
+                        .Where(e=>!e.Participants.Contains(user));
+                }
+                else
+                {
+                    events = _context.Events
+                        .Include(e => e.Location)
+                        .Include(e => e.Category);
+                }
+
+            }
+            else if(searchType == "applied")
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                events = _context.Events
+                    .Include(e => e.Location)
+                    .Include(e => e.Category)
+                    .Include(e => e.Participants)
+                    .Where(e => e.Participants.Contains(user));
+            }
+            else if (searchType == "created")
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                events = _context.Events
+                    .Include(e => e.Location)
+                    .Include(e => e.Category)
+                    .Where(e => e.Creator == user);
+            }
+            
             
             if (eventName != null)
             {
@@ -273,31 +343,28 @@ public class EventService : IEventService
         return _context.Categories.Where(c => c.Name.Contains(formattedCategory)).ToList();
     }
     
-    
-    
-        private const double EarthRadiusKm = 6371.0;
-        private static double DegreesToRadians(double degrees)
-        {
-            return degrees * Math.PI / 180.0;
-        }
-        public static double CalculateDistance(Location originLocation, Location goodLocation)
-        {
-            double lat1 = originLocation.Latitude;
-            double lat2 = goodLocation.Latitude;
-            double lon1 = originLocation.Longitude;
-            double lon2 = goodLocation.Longitude;
-            
-            double dLat = DegreesToRadians(lat2 - lat1);
-            double dLon = DegreesToRadians(lon2 - lon1);
+    private static double DegreesToRadians(double degrees)
+    {
+        return degrees * Math.PI / 180.0;
+    }
+    public static double CalculateDistance(Location originLocation, Location goodLocation)
+    {
+        double lat1 = originLocation.Latitude;
+        double lat2 = goodLocation.Latitude;
+        double lon1 = originLocation.Longitude;
+        double lon2 = goodLocation.Longitude;
+        
+        double dLat = DegreesToRadians(lat2 - lat1);
+        double dLon = DegreesToRadians(lon2 - lon1);
 
-            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                       Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
-                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                   Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
+                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
 
-            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
-            double distance = EarthRadiusKm * c;
-            return distance;
-        }
+        double distance = 6371.0 * c;
+        return distance;
+    }
    
 }

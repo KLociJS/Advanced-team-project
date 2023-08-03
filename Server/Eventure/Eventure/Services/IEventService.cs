@@ -7,6 +7,7 @@ namespace Eventure.Services;
 public interface IEventService
 {
     Task<EventActionResult> CreateEventAsync(CreateEventDto createEventDto, string userName);
+    Task<JoinEventResult> JoinEvent(long eventId, string userName);
     Task<EventActionResult> DeleteEvent(long id);
     Task<UpdateEventResult>  UpdateEvent(UpdateEventDto updateEventDto);
     Task<List<Event>> SearchEventAsync(string? eventName, 
@@ -16,7 +17,9 @@ public interface IEventService
         string? startingDate, 
         string? endingDate, 
         double? minPrice, 
-        double? maxPrice);
+        double? maxPrice,
+        string searchType,
+        string? userName);
     Task<List<Event>> GetEventsAsync();
     List<Location> GetLocation(string location);
     List<Category> GetCategory(string category);

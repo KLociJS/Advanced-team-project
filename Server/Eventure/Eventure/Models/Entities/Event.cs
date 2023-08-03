@@ -7,13 +7,9 @@ public class Event
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
-
     public string EventName { get; set; } = string.Empty;
-    
     public string Description { get; set; } = string.Empty;
-
     public DateTime StartingDate { get; set; }
-    
     public DateTime EndingDate { get; set; }
     public int HeadCount { get; set; }
     public int RecommendedAge { get; set; }
@@ -22,8 +18,7 @@ public class Event
     public Location? Location { get; set; }
     public long CategoryId { get; set; }
     public Category? Category { get; set; }
-    public List<AppliedEvent> AppliedEvents { get; } = new();
-    public string UserId { get; set; } = string.Empty;
+    public List<User> Participants { get; } = new();
+    public string CreatorId { get; set; } = string.Empty;
     public User? Creator { get; set; }
-    
 }
