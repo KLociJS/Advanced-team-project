@@ -9,6 +9,7 @@ public interface IEventService
     Task<EventActionResult> CreateEventAsync(CreateEventDto createEventDto, string userName);
     Task<JoinEventResult> JoinEvent(long eventId, string userName);
     Task<EventActionResult> DeleteEvent(long id);
+    Task<LeaveEventResult> LeaveEvent(long id, string username);
     Task<UpdateEventResult>  UpdateEvent(UpdateEventDto updateEventDto);
     Task<List<Event>> SearchEventAsync(string? eventName, 
         string? location, 
