@@ -1,5 +1,6 @@
 import { useState, useEffect }  from 'react'
-import { CardDisplayer, EventPreviewCard, JoinButton, SearchForm } from 'Components'
+import { CardDisplayer, EventPreviewCard, JoinButton, SearchForm, } from 'Components'
+import DeleteButton from './Components/DeleteButton'
 
 export default function CreatedEvents() {
   const [isOpen,setIsOpen] = useState(false)
@@ -23,7 +24,7 @@ export default function CreatedEvents() {
       <SearchForm isOpen={isOpen} setIsOpen={setIsOpen} url={searchUrl} setEvents={setEvents} searchType='created'/>
       <CardDisplayer isOpen={isOpen} setIsOpen={setIsOpen} events={events} setEvents={setEvents}>
         <EventPreviewCard>
-          
+        <DeleteButton />  
         </EventPreviewCard>
       </CardDisplayer>
     </>

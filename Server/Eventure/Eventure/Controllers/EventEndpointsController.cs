@@ -2,6 +2,7 @@ using Eventure.Models.Entities;
 using Eventure.Models.Enums;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
+using Eventure.Models.Results;
 using Eventure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -90,25 +91,43 @@ public class EventEndpointsController: ControllerBase
         }
     }
 
-    [Authorize]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteEvent(long id)
+    [Authorize(Roles = "User")]
+    [HttpDelete("delete-event/{eventId}")]
+    public async Task<IActionResult> DeleteEvent(long eventId)
     {
         try
         {
-            var result = await _eventService.DeleteEvent(id);
-            if (result.Succeeded)
+            var userName = HttpContext.User.Identity!.Name;
+            
+            if (eventId <= 0)
             {
-                return Ok(result.Response);
-                
+                return BadRequest("Invalid eventId.");
             }
-            return BadRequest(result.Response);
+            
+            var deleteEventResult = await _eventService.DeleteEvent(eventId, userName!);
+            
+            if (!deleteEventResult.Succeeded)
+            {
+                if (deleteEventResult.Error == ErrorType.EventNotFound)
+                {
+                    return NotFound("Event not found.");
+                }
+                else if (deleteEventResult.Error == ErrorType.UserNotFound)
+                {
+                    return NotFound("User not found.");
+                }
+                else
+                {
+                    return StatusCode(500, "An error occurred on the server.");
+                }
+            }
+
+            return Ok();
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            var result = new Response() { Message = "Server error"};
-            return StatusCode(500, result);
+            return StatusCode(500, "An error occured on the server.");
         }   
     }
 
