@@ -8,6 +8,7 @@ import AutoCompleteInput from "./Input/AutocompleteInput/AutoCompleteInput";
 import EventPreviewCard from "./EventPreviewCard/EventPreviewCard";
 import AuthorizedRender from "./AuthorizedRender/AuthorizedRender";
 import UnAuthorizedRender from "./UnAuthorizedRender/UnAuthorizedRender";
+import EventForm from "./EventForm/EventForm";
 
 export {
     Input,
@@ -20,4 +21,5 @@ export {
     EventPreviewCard,
     AuthorizedRender,
     UnAuthorizedRender,
+    EventForm,
 }
