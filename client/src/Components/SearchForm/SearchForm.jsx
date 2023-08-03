@@ -11,7 +11,7 @@ import {
   AutoCompleteInput,
  } from 'Components'
 
-export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
+export default function SearchForm({isOpen, setIsOpen, url, setEvents, searchType}) {
 
     const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
     const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
@@ -47,20 +47,18 @@ export default function SearchForm({isOpen, setIsOpen, url, setEvents}) {
             endingDate: endDateTime
         }
 
-        let searchParams = ''
+        let searchParams = `?searchType=${searchType}`
         Object.keys(searchParamsDict).forEach(key=>{
             if(searchParamsDict[key]!==''){
-                if(searchParams === ''){
-                    searchParams = `?${key}=${searchParamsDict[key]}`
-                }else{
-                    searchParams += `&${key}=${searchParamsDict[key]}`
-                }
+                searchParams += `&${key}=${searchParamsDict[key]}`
             }
         })
 
         console.log(searchParams);
         
-        fetch(`${url}${searchParams}`)
+        fetch(`${url}${searchParams}`,{
+            credentials: 'include'
+        })
         .then(res=>res.json())
         .then(data=>{
             setEvents(data.events)

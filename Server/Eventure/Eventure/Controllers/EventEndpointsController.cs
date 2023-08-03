@@ -170,8 +170,10 @@ public class EventEndpointsController: ControllerBase
         string? startingDate, 
         string? endingDate, 
         double? minPrice, 
-        double? maxPrice)
+        double? maxPrice,
+        string searchType)
     {
+        var userName = HttpContext.User.Identity!.Name;
         var events = await _eventService.SearchEventAsync(
             eventName, 
             location, 
@@ -180,7 +182,9 @@ public class EventEndpointsController: ControllerBase
             startingDate, 
             endingDate, 
             minPrice, 
-            maxPrice);
+            maxPrice,
+            searchType,
+            userName);
         
         var response = new EventsPreviewResponseDto { Events = events };
         return Ok(response);
