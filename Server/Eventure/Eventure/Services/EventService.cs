@@ -269,8 +269,11 @@ public class EventService : IEventService
                 return DeleteEventResult.ServerError(); 
             }
 
-            var eventToDelete = await _context.Events.FindAsync(eventId);
-            if (eventToDelete != null)
+            var user = await _userManager.FindByNameAsync(userName);
+            var eventToDelete = await _context.Events
+                .Include(e => e.Creator)
+                .FirstOrDefaultAsync(e =>  e.Id == eventId);
+            if (eventToDelete != null && eventToDelete.Creator == user)
             {
                 _context.Events.Remove(eventToDelete);
                 await _context.SaveChangesAsync();
