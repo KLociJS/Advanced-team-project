@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { CardDisplayer, SearchForm } from 'Components'
+import { CardDisplayer, EventPreviewCard, SearchForm } from 'Components'
+import  JoinButton  from './Components/JoinButton'
 
 export default function Events() {
 
@@ -21,8 +22,12 @@ export default function Events() {
 
   return (
     <>
-      <SearchForm isOpen={isOpen} setIsOpen={setIsOpen} url={searchUrl} setEvents={setEvents}/>
-      <CardDisplayer isOpen={isOpen} setIsOpen={setIsOpen} events={events} setEvents={setEvents}/>
+      <SearchForm isOpen={isOpen} setIsOpen={setIsOpen} url={searchUrl} setEvents={setEvents} searchType='all'/>
+      <CardDisplayer isOpen={isOpen} setIsOpen={setIsOpen} events={events} setEvents={setEvents}>
+        <EventPreviewCard>
+          <JoinButton />
+        </EventPreviewCard>
+      </CardDisplayer>
     </>
   )
 }

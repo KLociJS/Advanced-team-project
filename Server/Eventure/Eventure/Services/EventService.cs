@@ -139,13 +139,50 @@ public class EventService : IEventService
         string? startingDate, 
         string? endingDate, 
         double? minPrice, 
-        double? maxPrice)
+        double? maxPrice,
+        string searchType,
+        string? userName)
     {
         try
         {
-            IQueryable<Event> events = _context.Events
-                .Include(e => e.Location)
-                .Include(e => e.Category);
+            IQueryable<Event> events = null!;
+            if (searchType == "all")
+            {
+                if (userName != null)
+                {
+                    var user = await _userManager.FindByNameAsync(userName);
+                    events = _context.Events
+                        .Include(e => e.Location)
+                        .Include(e => e.Category)
+                        .Include(e => e.Participants)
+                        .Where(e=>!e.Participants.Contains(user));
+                }
+                else
+                {
+                    events = _context.Events
+                        .Include(e => e.Location)
+                        .Include(e => e.Category);
+                }
+
+            }
+            else if(searchType == "applied")
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                events = _context.Events
+                    .Include(e => e.Location)
+                    .Include(e => e.Category)
+                    .Include(e => e.Participants)
+                    .Where(e => e.Participants.Contains(user));
+            }
+            else if (searchType == "created")
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                events = _context.Events
+                    .Include(e => e.Location)
+                    .Include(e => e.Category)
+                    .Where(e => e.Creator == user);
+            }
+            
             
             if (eventName != null)
             {

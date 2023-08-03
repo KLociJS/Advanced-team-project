@@ -17,7 +17,9 @@ public interface IEventService
         string? startingDate, 
         string? endingDate, 
         double? minPrice, 
-        double? maxPrice);
+        double? maxPrice,
+        string searchType,
+        string? userName);
     Task<List<Event>> GetEventsAsync();
     List<Location> GetLocation(string location);
     List<Category> GetCategory(string category);
