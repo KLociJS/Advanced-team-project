@@ -260,19 +260,25 @@ public class EventService : IEventService
         }
     }
 
-    public async Task<EventActionResult> DeleteEvent(long id)
+    public async Task<DeleteEventResult> DeleteEvent(long eventId, string userName)
     {
         try
         {
-            var eventToDelete = _context.Events.FindAsync(id).Result;
+            if (eventId <= 0 || string.IsNullOrEmpty(userName))
+            {
+                return DeleteEventResult.ServerError(); 
+            }
+
+            var eventToDelete = await _context.Events.FindAsync(eventId);
             if (eventToDelete != null)
             {
                 _context.Events.Remove(eventToDelete);
                 await _context.SaveChangesAsync();
-                return EventActionResult.Succeed("Event deleted successfully");
+                return DeleteEventResult.Success();
             }
-
-            return EventActionResult.Failed("Couldn't find event by id");
+            return DeleteEventResult.EventNotFound();
+            
+            
         }
         catch (Exception e)
         {
