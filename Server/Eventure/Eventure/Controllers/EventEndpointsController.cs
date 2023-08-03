@@ -113,7 +113,7 @@ public class EventEndpointsController: ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("{id}/leave")]
+    [HttpPatch("/leave-event/{id}")]
     public async Task<IActionResult> LeaveEvent(long id)
     {
         try
