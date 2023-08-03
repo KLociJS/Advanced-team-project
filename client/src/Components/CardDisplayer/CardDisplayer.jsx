@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import './CardDisplayer.css'
 
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2'
-import { EventPreviewCard } from 'Components'
 
-export default function CardDisplayer({ isOpen, setIsOpen, events }) {
+export default function CardDisplayer({ isOpen, setIsOpen, events, setEvents, children }) {
 
   return (
     <section className='card-container'>
@@ -14,19 +13,13 @@ export default function CardDisplayer({ isOpen, setIsOpen, events }) {
         <HiMiniMagnifyingGlass className='searchbar-toggle-icon'/>
         </button>
       </div>
-        {events.map(e=>(
-          <EventPreviewCard
-            key={e.id}
-            name={e.eventName}
-            location={e.location.name}
-            category={e.category.name}
-            price={e.price}
-            recommendedAge={e.recommendedAge}
-            startingDate={e.startingDate}
-            endingDate={e.endingDate}
-            description={e.description}
-          />
-        ))}
+      {events.map((e) => {
+        return React.cloneElement(children, {
+          key: e.id,
+          event: e,
+          setEvents: setEvents
+        });
+      })}
     </section>
   )
 }

@@ -15,7 +15,9 @@ const Input = ({
   const handleBlur = () => setIsFocused(false)
   const handleChange = (e) => {
     setInputValue(e.target.value)
-    setError('')
+    if(setError){
+      setError('')
+    }
   };
 
   const isActive = isFocused || inputValue ? 'active' : ''

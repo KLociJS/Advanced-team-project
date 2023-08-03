@@ -1,6 +1,8 @@
 using Eventure.Models.Entities;
+using Eventure.Models.Enums;
 using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
+using Eventure.Models.Results;
 using Eventure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +43,35 @@ public class EventEndpointsController: ControllerBase
         }
     }
 
+    [Authorize(Roles = "User")]
+    [HttpPost("join-event/{eventId}")]
+    public async Task<ActionResult> JoinEvent(long eventId)
+    {
+        try
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            var joinEventResult = await _eventService.JoinEvent(eventId, userName!);
+            
+            if (!joinEventResult.Succeeded && joinEventResult.Error != ErrorType.Server)
+            {
+                return BadRequest();
+            }
+
+            if (!joinEventResult.Succeeded)
+            {
+                return StatusCode(500, "An error occured on the server.");
+            }
+            
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, "An error occured on the server.");
+        }
+    }
+
+    [Authorize]
     [HttpPut()]
     public async Task<IActionResult> UpdateEvent(UpdateEventDto updateEventDto)
     {
@@ -60,24 +91,43 @@ public class EventEndpointsController: ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteEvent(long id)
+    [Authorize(Roles = "User")]
+    [HttpDelete("delete-event/{eventId}")]
+    public async Task<IActionResult> DeleteEvent(long eventId)
     {
         try
         {
-            var result = await _eventService.DeleteEvent(id);
-            if (result.Succeeded)
+            var userName = HttpContext.User.Identity!.Name;
+            
+            if (eventId <= 0)
             {
-                return Ok(result.Response);
-                
+                return BadRequest("Invalid eventId.");
             }
-            return BadRequest(result.Response);
+            
+            var deleteEventResult = await _eventService.DeleteEvent(eventId, userName!);
+            
+            if (!deleteEventResult.Succeeded)
+            {
+                if (deleteEventResult.Error == ErrorType.EventNotFound)
+                {
+                    return NotFound("Event not found.");
+                }
+                else if (deleteEventResult.Error == ErrorType.UserNotFound)
+                {
+                    return NotFound("User not found.");
+                }
+                else
+                {
+                    return StatusCode(500, "An error occurred on the server.");
+                }
+            }
+
+            return Ok();
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            var result = new Response() { Message = "Server error"};
-            return StatusCode(500, result);
+            return StatusCode(500, "An error occured on the server.");
         }   
     }
 
@@ -141,8 +191,10 @@ public class EventEndpointsController: ControllerBase
         string? startingDate, 
         string? endingDate, 
         double? minPrice, 
-        double? maxPrice)
+        double? maxPrice,
+        string searchType)
     {
+        var userName = HttpContext.User.Identity!.Name;
         var events = await _eventService.SearchEventAsync(
             eventName, 
             location, 
@@ -151,7 +203,9 @@ public class EventEndpointsController: ControllerBase
             startingDate, 
             endingDate, 
             minPrice, 
-            maxPrice);
+            maxPrice,
+            searchType,
+            userName);
         
         var response = new EventsPreviewResponseDto { Events = events };
         return Ok(response);
