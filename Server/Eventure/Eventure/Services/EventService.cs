@@ -291,8 +291,11 @@ public class EventService : IEventService
     {
         try
         {
-            var eventToLeave = await _context.Events.FindAsync(id);
-            var userToLeave = await _context.Users.FindAsync(username);
+            var eventToLeave = await _context.Events
+                .Include(e=> e.Participants)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            var userToLeave = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserName == username);
 
             if (eventToLeave == null)
             {
