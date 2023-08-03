@@ -70,6 +70,7 @@ public class EventEndpointsController: ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut()]
     public async Task<IActionResult> UpdateEvent(UpdateEventDto updateEventDto)
     {
@@ -89,6 +90,7 @@ public class EventEndpointsController: ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEvent(long id)
     {
