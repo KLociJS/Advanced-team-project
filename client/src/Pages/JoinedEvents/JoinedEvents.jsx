@@ -1,5 +1,9 @@
 import { useState, useEffect }  from 'react'
+
+import LeaveButton from 'Pages/JoinedEvents/Components/LeaveButton'
+
 import { CardDisplayer, EventPreviewCard, SearchForm } from 'Components'
+
 
 
 export default function JoinedEvents() {
@@ -24,7 +28,9 @@ export default function JoinedEvents() {
       <SearchForm isOpen={isOpen} setIsOpen={setIsOpen} url={searchUrl} setEvents={setEvents} searchType='applied'/>
       <CardDisplayer isOpen={isOpen} setIsOpen={setIsOpen} events={events} setEvents={setEvents}>
         <EventPreviewCard>
-        
+
+          <LeaveButton />
+
         </EventPreviewCard>
       </CardDisplayer>
     </>

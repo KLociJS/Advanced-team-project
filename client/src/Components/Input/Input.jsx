@@ -15,8 +15,10 @@ const Input = ({
   const handleBlur = () => setIsFocused(false)
   const handleChange = (e) => {
     setInputValue(e.target.value)
+
     if(setError){
       setError('')
+
     }
   };
 

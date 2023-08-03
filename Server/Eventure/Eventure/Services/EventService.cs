@@ -287,6 +287,38 @@ public class EventService : IEventService
         }
     }
 
+    public async Task<LeaveEventResult> LeaveEvent(long id, string username)
+    {
+        try
+        {
+            var eventToLeave = await _context.Events.FindAsync(id);
+            var userToLeave = await _context.Users.FindAsync(username);
+
+            if (eventToLeave == null)
+            {
+                return LeaveEventResult.EventNotFound();
+            }
+
+            if (userToLeave == null)
+            {
+                return LeaveEventResult.UserNotFound();
+            }
+
+            if (!eventToLeave.Participants.Contains(userToLeave))
+            {
+                return LeaveEventResult.UserIsNotParticipant();
+            }
+
+            eventToLeave.Participants.Remove(userToLeave);
+            await _context.SaveChangesAsync();
+            return LeaveEventResult.Success();
+        }
+        catch
+        {
+            return LeaveEventResult.ServerError();
+        }
+    }
+
     public async Task<UpdateEventResult> UpdateEvent(UpdateEventDto updateEventDto)
     {
         try

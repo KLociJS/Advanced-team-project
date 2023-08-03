@@ -131,6 +131,28 @@ public class EventEndpointsController: ControllerBase
         }   
     }
 
+    [Authorize]
+    [HttpPatch("/leave-event/{id}")]
+    public async Task<IActionResult> LeaveEvent(long id)
+    {
+        try
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            var result = await _eventService.LeaveEvent(id, userName!);
+            if (result.Succeeded)
+            {
+                return Ok(result.Message);
+            }
+
+            return BadRequest(result.Message);
+        }
+        catch (Exception e)
+        {
+            var result = new Response() { Message = "Server error" };
+            return StatusCode(500, result);
+        }
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEventById(long id)
     {
