@@ -2,7 +2,7 @@ import { AutoCompleteInput, DateInput, Input, PrimaryButton, SecondaryButton } f
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export default function EventForm({url,navigateTo,event}) {
+export default function EventForm({url,navigateTo,buttonText,event, method}) {
     const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
     const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
   
@@ -10,16 +10,16 @@ export default function EventForm({url,navigateTo,event}) {
   
     const [eventName, setEventName] = useState(event?.eventName || '')
     const [description, setDescription] = useState(event?.description || '')
-    const [category, setCategory] = useState(event?.location.name || '')
-    const [location, setLocation] = useState(event?.category.name || '')
+    const [category, setCategory] = useState(event?.category.name || '')
+    const [location, setLocation] = useState(event?.location.name || '')
     const [price, setPrice] = useState(event?.price || '')
     const [maxHeadCount, setMaxHeadCount] = useState(event?.headCount || '')
     const [recommendedAge, setRecommendedAge] = useState( event?.recommendedAge || '')
-    const [startingDate, setStartingDate] = useState(event?.startingDate || '')
+    const [startingDate, setStartingDate] = useState(event?.startingDate.substring(0,10) || '')
     const startingDateTime = event?.startingDate.substring(11,16)
     const [startingTime, setStartingTime] = useState(startingDateTime || '00:00')
-    const [endingDate, setEndingDate] = useState(event?.endingDate || '')
-    const endingDateTime = event?.endingDateDate.substring(11,16)
+    const [endingDate, setEndingDate] = useState(event?.endingDate.substring(0,10) || '')
+    const endingDateTime = event?.endingDate.substring(11,16)
     const [endingTime, setEndingTime] = useState(endingDateTime || '00:00')
   
     const clickHandler = (e) => {
@@ -43,7 +43,7 @@ export default function EventForm({url,navigateTo,event}) {
       console.log(newEvent);
   
       fetch(url,{
-        method: 'POST',
+        method: method,
         headers: {
           'content-type' : 'application/json'
         },
@@ -81,7 +81,7 @@ export default function EventForm({url,navigateTo,event}) {
         <Input label='Recommended Age' type='number' inputValue={recommendedAge} setInputValue={setRecommendedAge}/>
         <DateInput label='Startin Date' dateValue={startingDate} setDateValue={setStartingDate} time={startingTime} setTime={setStartingTime}/>
         <DateInput label='Ending Date' dateValue={endingDate} setDateValue={setEndingDate} time={endingTime} setTime={setEndingTime}/>
-        <PrimaryButton text='Create' clickHandler={clickHandler} />
+        <PrimaryButton text={buttonText} clickHandler={clickHandler} />
         <SecondaryButton text='Cancel' />
       </div>
     )

@@ -100,7 +100,11 @@ public class EventService : IEventService
     {
         try
         {
-            var eventById = await _context.Events.FindAsync(id);
+            var eventById = await _context.Events
+                .Include(e=>e.Category)
+                .Include(e=>e.Location)
+                .FirstOrDefaultAsync(e=>e.Id==id);
+            
             if (eventById != null)
             {
                 return GetEventResult.Succeed("Event found", eventById);
@@ -325,36 +329,42 @@ public class EventService : IEventService
         }
     }
 
-    public async Task<UpdateEventResult> UpdateEvent(UpdateEventDto updateEventDto)
+
+    public async Task<UpdateEventResult> UpdateEvent(UpdateEventDto updateEventDto, long id, string userName)
     {
         try
         {
+            var user = await _userManager.FindByNameAsync(userName);
             var eventFound = await _context.Events
-                .Include(e => e.Location) // Include the Location
-                .Include(e => e.Category) // Include the Category
-                .FirstOrDefaultAsync(e => e.Id == updateEventDto.Id);
-            if (eventFound != null)
+                .Include(e => e.Location) 
+                .Include(e => e.Category) 
+                .Include(e=>e.Creator)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            
+            var location = await _context.Locations.FirstOrDefaultAsync(l => l.Name.ToLower() == updateEventDto.Location.ToLower());
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name.ToLower() == updateEventDto.Category.ToLower());
+
+            if (eventFound != null && eventFound.Creator==user)
             {
-                eventFound.LocationId = updateEventDto.LocationId;
-                eventFound.CategoryId = updateEventDto.CategoryId;
                 eventFound.EventName = updateEventDto.EventName;
                 eventFound.Description = updateEventDto.Description;
-                eventFound.StartingDate = updateEventDto.StartingDate;
-                eventFound.EndingDate = updateEventDto.EndingDate;
+                eventFound.StartingDate = Convert.ToDateTime(updateEventDto.StartingDate).ToUniversalTime();
+                eventFound.EndingDate = Convert.ToDateTime(updateEventDto.EndingDate).ToUniversalTime();
                 eventFound.HeadCount = updateEventDto.HeadCount;
                 eventFound.RecommendedAge = updateEventDto.RecommendedAge;
                 eventFound.Price = updateEventDto.Price;
+                eventFound.Location = location;
+                eventFound.Category = category;
                 
                 _context.Events.Update(eventFound);
                 await _context.SaveChangesAsync();
                 
                 var resultEvent = new EventPreviewResponseDto()
                 {
-                    Id = updateEventDto.Id,
                     EventName = updateEventDto.EventName,
                     Description = updateEventDto.Description,
-                    StartingDate = updateEventDto.StartingDate,
-                    EndingDate = updateEventDto.EndingDate,
+                    StartingDate = eventFound.StartingDate,
+                    EndingDate = eventFound.EndingDate,
                     HeadCount = updateEventDto.HeadCount,
                     RecommendedAge = updateEventDto.RecommendedAge,
                     Price = updateEventDto.Price,

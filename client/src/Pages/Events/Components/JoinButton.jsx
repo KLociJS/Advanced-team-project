@@ -1,7 +1,6 @@
 import PrimaryButton from '../../../Components/Button/PrimaryButton'
 
 export default function JoinButton({eventId, setEvents}) {
-    console.log(eventId)
 
     const eventJoinHandler = (id) => {
         fetch(`https://localhost:7019/EventEndpoints/join-event/${id}`,{

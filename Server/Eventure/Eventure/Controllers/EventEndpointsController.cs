@@ -72,12 +72,14 @@ public class EventEndpointsController: ControllerBase
     }
 
     [Authorize]
-    [HttpPut()]
-    public async Task<IActionResult> UpdateEvent(UpdateEventDto updateEventDto)
+    [HttpPut("{id}")]
+
+    public async Task<IActionResult> UpdateEvent(UpdateEventDto updateEventDto, long id)
     {
         try
         {
-            var result = await _eventService.UpdateEvent(updateEventDto);
+            var userName = HttpContext.User.Identity!.Name;
+            var result = await _eventService.UpdateEvent(updateEventDto, id, userName);
             if (result.Succeeded)
             {
                 return Ok(result.Data);
@@ -161,7 +163,7 @@ public class EventEndpointsController: ControllerBase
             var result = await _eventService.GetEventByIdAsync(id);
             if (result.Succeeded)
             {
-                return Ok(result.Response);
+                return Ok(result.EventData);
                 
             }
 
