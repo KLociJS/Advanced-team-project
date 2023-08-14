@@ -1,0 +1,19 @@
+name: Eventure CI/CD
+
+on:
+  push:
+    branches: [ loci-workflow ]
+  pull_request:
+    branches: [ loci-workflow ]
+    
+jobs:
+  database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PostgreSQL
+        run: |
+           docker run --name database -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} -p 5432:5432 postgres:latest
