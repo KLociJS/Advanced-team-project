@@ -14,7 +14,7 @@ export default function JoinedEvents() {
   const searchUrl = 'https://localhost:7019/EventEndpoints/search'
 
   useEffect(()=>{
-    fetch('https://localhost:7019/EventEndpoints')
+    fetch('https://localhost:7019/EventEndpoints/search?searchType=applied', {credentials:'include'})
     .then(res=>res.json())
     .then(data=>{
       console.log(data.events);

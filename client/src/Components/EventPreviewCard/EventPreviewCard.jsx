@@ -9,14 +9,11 @@ import { CiCalendar } from 'react-icons/ci'
 export default function EventPreviewCard({ event, setEvents, children }) {
     return (
         <section className='event-card'>
-            <h1 className='mb-1'>{event.eventName}</h1>
-            <h3>{event.description}</h3>
+            <h1 className='event-heading'>{event.eventName}</h1>
+            <h3 className='event-description mb-1'>{event.description}</h3>
             <h3>
                 <CiLocationOn className='card-icon' />
                 {event.location.name}
-            </h3>
-            <h3>
-                {event.category.name}
             </h3>
             <p>
                 <PiBabyLight className='card-icon' />
@@ -33,7 +30,7 @@ export default function EventPreviewCard({ event, setEvents, children }) {
                     <p>{event.endingDate.substring(0, 10)} {event.endingDate.substring(11, 16)}</p>
                 </div>
             </div>
-            <div>
+            <div className='card-buttons'>
                 {React.Children.map(children, (child) => {
                     return React.cloneElement(child, {
                         eventId: event.id,

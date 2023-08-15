@@ -1,20 +1,33 @@
 .event-card{
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    gap: 0.5rem;
+    
     padding: 1rem;
     border-radius: 5px;
+    box-shadow: 1px 1px 5px var(--text-secondary);
+
+    max-width: 30%;
+    min-width: 260px;
+    height: 450px;
+    /* width: 200px;
+    height: 320px; */
+}
+.card-buttons{
+    padding-top: 1rem;
+    margin-top: auto;
 
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-
-    box-shadow: 1px 1px 5px var(--text-secondary);
-
-    width: 200px;
-    height: 320px;
+    justify-content: center;
 }
 
 .event-card h1{
     text-align: center;
     font-size: 1.5rem;
+    font-weight: 600;
 }
 .event-card h3, .event-card>p{
     display: flex;
@@ -37,4 +50,8 @@
 
 .card-icon{
     font-size: 1.5rem;
+}
+
+.event-description{
+    color: var(--text-secondary);
 }

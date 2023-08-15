@@ -73,7 +73,6 @@ public class EventEndpointsController: ControllerBase
 
     [Authorize]
     [HttpPut("{id}")]
-
     public async Task<IActionResult> UpdateEvent(UpdateEventDto updateEventDto, long id)
     {
         try
