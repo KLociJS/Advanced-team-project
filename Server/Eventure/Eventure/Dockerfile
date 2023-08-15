@@ -4,9 +4,9 @@ WORKDIR /App
 # Copy everything
 COPY . ./
 # Restore as distinct layers
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-RUN dotnet ef database update
+# RUN dotnet tool install --global dotnet-ef
+# ENV PATH="$PATH:/root/.dotnet/tools"
+# RUN dotnet ef database update
 RUN dotnet restore
 # Build and publish a release
 RUN dotnet publish -c Release -o out
