@@ -11,13 +11,17 @@ export default function Events() {
   const searchUrl = 'https://localhost:7019/EventEndpoints/search'
 
   useEffect(()=>{
-    fetch('https://localhost:7019/EventEndpoints')
+    fetch('http://localhost:5000/EventEndpoints')
     .then(res=>res.json())
     .then(data=>{
       console.log(data.events);
       setEvents(data.events)
     })
     .catch(console.log)
+
+    return ()=>{
+      
+    }
   },[])
 
   return (

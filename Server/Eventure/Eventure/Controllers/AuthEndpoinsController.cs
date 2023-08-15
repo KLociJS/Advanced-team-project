@@ -97,19 +97,25 @@ public class AuthEndpointsController : ControllerBase
     [Route("/api/signup")]
     public async Task<IActionResult> Signup(RegisterUserDto registerUserDto)
     {
-        var registrationResult = await _authService.RegisterUser(registerUserDto);
-
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(e => e.Errors.Select(err => err.ErrorMessage));
             return BadRequest(new { Errors = errors });
         }
         
-        return Ok(new
+        var registrationResult = await _authService.RegisterUser(registerUserDto);
+
+        if (registrationResult.Succeeded)
         {
-            Message = registrationResult.Message,
-            User = registerUserDto
-        });
-        
+            return Ok(new
+            {
+                Message = registrationResult.Message,
+                User = registerUserDto
+            });
+        }
+
+        return BadRequest(new { registrationResult.Message });
+
+
     }
 }
