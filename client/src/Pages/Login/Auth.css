@@ -1,0 +1,45 @@
+.auth-card{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px var(--text-secondary);
+
+    max-width: 300px;
+    margin: auto;
+}
+
+.auth-header-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.error{
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--warn);
+    font-size: 0.85rem;
+}
+
+.success{
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--success);
+    font-size: 0.85rem;
+}
+
+.auth-icon{
+    font-size: 5rem;
+    color: var(--text-primary);
+    margin: auto;
+}
+
+.auth-heading{
+    text-align: center;
+    font-size: 3rem;
+    line-height: 1;
+}

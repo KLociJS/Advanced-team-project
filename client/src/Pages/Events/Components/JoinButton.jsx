@@ -1,6 +1,9 @@
+import useAuth from 'Hooks/useAuth'
 import PrimaryButton from '../../../Components/Button/PrimaryButton'
 
 export default function JoinButton({eventId, setEvents}) {
+
+    const { user } = useAuth()
 
     const eventJoinHandler = (id) => {
         fetch(`https://localhost:7019/EventEndpoints/join-event/${id}`,{
@@ -21,6 +24,9 @@ export default function JoinButton({eventId, setEvents}) {
         })
         .catch(console.log)
     }
-  return <PrimaryButton text='Join event' clickHandler={()=>eventJoinHandler(eventId)}/>
+
+    if(!user) return null
+
+    return <PrimaryButton text='Join event' clickHandler={()=>eventJoinHandler(eventId)}/>
   
 }

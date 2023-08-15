@@ -9,6 +9,8 @@ import EventPreviewCard from "./EventPreviewCard/EventPreviewCard";
 import AuthorizedRender from "./AuthorizedRender/AuthorizedRender";
 import UnAuthorizedRender from "./UnAuthorizedRender/UnAuthorizedRender";
 import EventForm from "./EventForm/EventForm";
+import CheckMarkIcon from "./Icons/CheckMarkIcon";
+import XIcon from "./Icons/XIcon";
 
 export {
     Input,
@@ -22,4 +24,6 @@ export {
     AuthorizedRender,
     UnAuthorizedRender,
     EventForm,
+    CheckMarkIcon,
+    XIcon,
 }

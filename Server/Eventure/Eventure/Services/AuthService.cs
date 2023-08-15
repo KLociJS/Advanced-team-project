@@ -85,7 +85,6 @@ public class AuthService : IAuthService
         {
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            // Add other claims as needed
         };
         
         var roles = await _userManager.GetRolesAsync(user);
@@ -96,6 +95,7 @@ public class AuthService : IAuthService
         }
         
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        
         var token = new JwtSecurityToken(
             issuer: _configuration["JWT:ValidIssuer"],
             audience:_configuration["JWT:ValidAudience"],

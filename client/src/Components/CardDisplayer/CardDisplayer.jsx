@@ -4,7 +4,7 @@ import './CardDisplayer.css'
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2'
 
 export default function CardDisplayer({ isOpen, setIsOpen, events, setEvents, children }) {
-
+  
   return (
     <section className='card-container'>
       <div className='search-button-container'>
@@ -18,7 +18,7 @@ export default function CardDisplayer({ isOpen, setIsOpen, events, setEvents, ch
           key: e.id,
           event: e,
           setEvents: setEvents
-        });
+        })
       })}
     </section>
   )

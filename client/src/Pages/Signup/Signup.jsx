@@ -1,8 +1,15 @@
 import React, { useState } from 'react'
+
 import {
-  Input, PrimaryButton,
+  CheckMarkIcon,
+  Input,
+  PrimaryButton,
+  XIcon
 } from 'Components'
+
 import { isValidUsername, isValidEmail, isValidPassword } from 'Utility';
+import { AiOutlineUser } from 'react-icons/ai'
+
 
 
 
@@ -64,14 +71,17 @@ export default function Signup() {
   }
 
   return (
-    <div>
-
+    <div className='auth-card'>
+      <div className='auth-header-container'>
+        <AiOutlineUser className='auth-icon'/>
+        <h1 className='auth-heading'>Signup</h1>
+      </div>
       <Input label={"Username"} inputValue={username} setInputValue={setUsername} setError={setError}/>
       <Input label={"Email"} inputValue={email} setInputValue={setEmail} setError={setError}/>
       <Input label={"Password"} type={"password"} inputValue={password} setInputValue={setPassword} setError={setError}/>
-      <PrimaryButton text={"Register"} clickHandler={handleSubmit} />
-      {isRegistrationSuccessful ? (<p>Registration successful</p>) : null}
-      {error ? <p>{error}</p> : null}
+      <PrimaryButton text={"Signup"} clickHandler={handleSubmit} />
+      {isRegistrationSuccessful ? (<p className='success'><CheckMarkIcon /> Registration successful</p>) : null}
+      {error ? <p className='error'><XIcon/>{error}</p> : null}
     </div>
   );
 
