@@ -2,9 +2,9 @@ name: Eventure CI/CD
 
 on:
   push:
-    branches: [ loci-workflow ]
+    branches: [ main ]
   pull_request:
-    branches: [ loci-workflow ]
+    branches: [ main ]
     
 jobs:
   buildapi:
