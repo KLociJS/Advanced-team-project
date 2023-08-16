@@ -25,7 +25,7 @@ public class EventEndpointsController: ControllerBase
     {
         try
         {
-            var userName = HttpContext.User.Identity!.Name;
+          var userName = HttpContext.User.Identity!.Name;
             var createEventResult = await _eventService.CreateEventAsync(createEventDto, userName!);
             if (createEventResult.Succeeded)
             {
@@ -33,7 +33,7 @@ public class EventEndpointsController: ControllerBase
             }
             else
             {
-                return BadRequest(new { message = "Bad bat!" });
+                return BadRequest(new Response(){ Message = "Could not create event" });
             }
         }
         catch (Exception e)
@@ -54,7 +54,7 @@ public class EventEndpointsController: ControllerBase
             
             if (!joinEventResult.Succeeded && joinEventResult.Error != ErrorType.Server)
             {
-                return BadRequest();
+                return BadRequest(new Response(){Message = "Could not join event"});
             }
 
             if (!joinEventResult.Succeeded)
@@ -150,62 +150,12 @@ public class EventEndpointsController: ControllerBase
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
             var result = new Response() { Message = "Server error" };
             return StatusCode(500, result);
         }
     }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetEventById(long id)
-    {
-        try
-        {
-            var result = await _eventService.GetEventByIdAsync(id);
-            if (result.Succeeded)
-            {
-                return Ok(result.EventData);
-                
-            }
-
-            return BadRequest(result);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            var result = new Response() { Message = "Server error"};
-            return StatusCode(500, result);
-        }   
-    }
-
-    [HttpGet("random")]
-    public async Task<IActionResult> GetRandomEvents()
-    {
-        try
-        {
-            var randomResult = await _eventService.GetRandomEvent();
-            if (randomResult.Succeeded)
-            {
-                return Ok(randomResult.Response);
-            }
-
-            return BadRequest(randomResult);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            var result = new Response() { Message = "Server error"};
-            return StatusCode(500, result);
-        };
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<List<Event>>> GetEvents()
-    {
-        var events = await _eventService.GetEventsAsync();
-        var response = new EventsPreviewResponseDto { Events = events };
-        return Ok(response);
-    }
-
+    
     [HttpGet("search")]
     public async Task<ActionResult<List<Event>>> SearchEvent(
         string? eventName, 
@@ -218,21 +168,30 @@ public class EventEndpointsController: ControllerBase
         double? maxPrice,
         string searchType)
     {
-        var userName = HttpContext.User.Identity!.Name;
-        var events = await _eventService.SearchEventAsync(
-            eventName, 
-            location, 
-            distance,
-            category, 
-            startingDate, 
-            endingDate, 
-            minPrice, 
-            maxPrice,
-            searchType,
-            userName);
-        
-        var response = new EventsPreviewResponseDto { Events = events };
-        return Ok(response);
+        try
+        {
+            var userName = HttpContext.User.Identity!.Name;
+            var events = await _eventService.SearchEventAsync(
+                eventName, 
+                location, 
+                distance,
+                category, 
+                startingDate, 
+                endingDate, 
+                minPrice, 
+                maxPrice,
+                searchType,
+                userName);
+            
+            var response = new EventsPreviewResponseDto { Events = events };
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var result = new Response() { Message = "Server error" };
+            return StatusCode(500, result);
+        }
     }
 
     [HttpGet("location")]
