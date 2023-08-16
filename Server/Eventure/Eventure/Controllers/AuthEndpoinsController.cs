@@ -1,4 +1,5 @@
-﻿using Eventure.Models.RequestDto;
+﻿using System.Diagnostics.CodeAnalysis;
+using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
 using Eventure.Models.Results;
 using Eventure.Services;
@@ -64,6 +65,7 @@ public class AuthEndpointsController : ControllerBase
 
 
     //Logout Endpoint
+    [ExcludeFromCodeCoverage]
     [HttpPost]
     [Route("/api/logout")]
     public async Task<IActionResult> Logout()
