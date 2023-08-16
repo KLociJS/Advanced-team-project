@@ -54,12 +54,12 @@ public class EventEndpointsController: ControllerBase
             
             if (!joinEventResult.Succeeded && joinEventResult.Error != ErrorType.Server)
             {
-                return BadRequest(new Response(){Message = "Could not join event"});
+                return BadRequest(new Response(){Message = "Could not join event."});
             }
 
             if (!joinEventResult.Succeeded)
             {
-                return StatusCode(500, "An error occured on the server.");
+                return StatusCode(500, new Response(){Message = "An error occured on the server."});
             }
             
             return Ok();
@@ -67,7 +67,7 @@ public class EventEndpointsController: ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return StatusCode(500, "An error occured on the server.");
+            return StatusCode(500, new Response(){Message = "An error occured on the server."});
         }
     }
 
@@ -88,7 +88,7 @@ public class EventEndpointsController: ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            return StatusCode(500, new Response(){Message = "An error occured on the server."});
         }
     }
 
@@ -128,7 +128,7 @@ public class EventEndpointsController: ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return StatusCode(500, "An error occured on the server.");
+            return StatusCode(500, new Response(){Message = "An error occured on the server."});
         }   
     }
 
@@ -150,7 +150,7 @@ public class EventEndpointsController: ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            var result = new Response() { Message = "Server error" };
+            var result = new Response() { Message = "An error occured on the server." };
             return StatusCode(500, result);
         }
     }
