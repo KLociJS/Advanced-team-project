@@ -103,7 +103,7 @@ public class AuthEndpointsController : ControllerBase
                 return BadRequest(new { Errors = errors });
             }
             
-            var registrationResult = await _authService.RegisterUser(registerUserDto);
+            var registrationResult = await _authService.RegisterAsync(registerUserDto);
 
             if (registrationResult.Succeeded)
             {

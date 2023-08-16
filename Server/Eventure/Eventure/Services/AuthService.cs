@@ -22,7 +22,7 @@ public class AuthService : IAuthService
         _configuration = configuration;
     }
 
-    public async Task<RegisterResult> RegisterUser(RegisterUserDto registerUserDto)
+    public async Task<RegisterResult> RegisterAsync(RegisterUserDto registerUserDto)
     {
         try
         {

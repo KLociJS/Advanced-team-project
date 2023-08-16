@@ -3,6 +3,7 @@ using Eventure.Models.RequestDto;
 using Eventure.Models.ResponseDto;
 using Eventure.Models.Results;
 using Eventure.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -66,6 +67,7 @@ public class AuthControllerTest
         var serverErrorResult = result as ObjectResult;
         Assert.That((serverErrorResult!.Value as LoginResult)!.ErrorMessage,
             Is.EqualTo("An error occured on the server."));
+        
     }
 
     [Test]
@@ -85,7 +87,7 @@ public class AuthControllerTest
         var registerUserDto = new RegisterUserDto();
         var registerResult = new RegisterResult { Succeeded = false, Message = new List<string> { "Username already taken." }};
 
-        _mockAuthService!.Setup(s => s.RegisterUser(It.IsAny<RegisterUserDto>()))
+        _mockAuthService!.Setup(s => s.RegisterAsync(It.IsAny<RegisterUserDto>()))
             .ReturnsAsync(registerResult);
 
         var userNameTakenResultMessage = new List<string> { "Username already taken." };
@@ -102,7 +104,7 @@ public class AuthControllerTest
         var registerUserDto = new RegisterUserDto();
         var registerResult = new RegisterResult { Succeeded = true, Message = new List<string> { "Registration successful" }};
 
-        _mockAuthService!.Setup(s => s.RegisterUser(It.IsAny<RegisterUserDto>()))
+        _mockAuthService!.Setup(s => s.RegisterAsync(It.IsAny<RegisterUserDto>()))
             .ReturnsAsync(registerResult);
 
         var result = await _authController!.Signup(registerUserDto);
@@ -115,7 +117,7 @@ public class AuthControllerTest
     {
         var registerUserDto = new RegisterUserDto();
 
-        _mockAuthService!.Setup(s => s.RegisterUser(It.IsAny<RegisterUserDto>()))
+        _mockAuthService!.Setup(s => s.RegisterAsync(It.IsAny<RegisterUserDto>()))
             .ThrowsAsync(new Exception());
 
         var result = await _authController!.Signup(registerUserDto);
