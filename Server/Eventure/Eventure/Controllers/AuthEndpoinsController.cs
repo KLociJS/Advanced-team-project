@@ -12,12 +12,10 @@ namespace Eventure.Controllers;
 public class AuthEndpointsController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthEndpointsController(IAuthService authService, IHttpContextAccessor httpContextAccessor)
+    public AuthEndpointsController(IAuthService authService)
     {
         _authService = authService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     //Login Endpoint
@@ -97,24 +95,32 @@ public class AuthEndpointsController : ControllerBase
     [Route("/api/signup")]
     public async Task<IActionResult> Signup(RegisterUserDto registerUserDto)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            var errors = ModelState.Values.SelectMany(e => e.Errors.Select(err => err.ErrorMessage));
-            return BadRequest(new { Errors = errors });
-        }
-        
-        var registrationResult = await _authService.RegisterUser(registerUserDto);
-
-        if (registrationResult.Succeeded)
-        {
-            return Ok(new
+            if (!ModelState.IsValid)
             {
-                Message = registrationResult.Message,
-                User = registerUserDto
-            });
-        }
+                var errors = ModelState.Values.SelectMany(e => e.Errors.Select(err => err.ErrorMessage));
+                return BadRequest(new { Errors = errors });
+            }
+            
+            var registrationResult = await _authService.RegisterUser(registerUserDto);
 
-        return BadRequest(new { registrationResult.Message });
+            if (registrationResult.Succeeded)
+            {
+                return Ok(new RegisterResponseDto
+                {
+                    Message = registrationResult.Message,
+                    User = registerUserDto
+                });
+            }
+
+            return BadRequest(new RegisterResponseDto { Message = registrationResult.Message });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return StatusCode(500, new Response { Message = "An error occured on the server." });
+        }
 
 
     }
