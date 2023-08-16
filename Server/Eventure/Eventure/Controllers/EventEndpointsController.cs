@@ -62,7 +62,7 @@ public class EventEndpointsController: ControllerBase
                 return StatusCode(500, new Response(){Message = "An error occured on the server."});
             }
             
-            return Ok();
+            return Ok( new Response { Message = "Joined event."});
         }
         catch (Exception e)
         {
@@ -111,24 +111,23 @@ public class EventEndpointsController: ControllerBase
             {
                 if (deleteEventResult.Error == ErrorType.EventNotFound)
                 {
-                    return NotFound("Event not found.");
+                    return NotFound( new Response { Message = "Event not found."});
                 }
-                else if (deleteEventResult.Error == ErrorType.UserNotFound)
+                if (deleteEventResult.Error == ErrorType.UserNotFound)
                 {
-                    return NotFound("User not found.");
+                    return NotFound(new Response { Message = "User not found."});
                 }
-                else
-                {
-                    return StatusCode(500, "An error occurred on the server.");
-                }
+              
+                return StatusCode(500, new Response { Message = "An error occurred on the server." });
+                
             }
 
-            return Ok();
+            return Ok( new Response { Message = "Event deleted."});
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return StatusCode(500, new Response(){Message = "An error occured on the server."});
+            return StatusCode(500, new Response { Message = "An error occured on the server." });
         }   
     }
 
@@ -156,7 +155,7 @@ public class EventEndpointsController: ControllerBase
     }
     
     [HttpGet("search")]
-    public async Task<ActionResult<List<Event>>> SearchEvent(
+    public async Task<IActionResult> SearchEvent(
         string? eventName, 
         string? location, 
         double? distance,
@@ -188,7 +187,7 @@ public class EventEndpointsController: ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            var result = new Response() { Message = "Server error" };
+            var result = new Response() { Message = "An error occured on the server." };
             return StatusCode(500, result);
         }
     }
@@ -208,7 +207,7 @@ public class EventEndpointsController: ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e);
-            var result = new Response() { Message = "Error in searching location"};
+            var result = new Response() { Message = "An error occured on the server."};
             return StatusCode(500, result);
             
         }
@@ -229,7 +228,7 @@ public class EventEndpointsController: ControllerBase
         catch (Exception e)
         {
             Console.WriteLine(e); 
-            var result = new Response() { Message = "Error in searching categories"};
+            var result = new Response() { Message = "An error occured on the server."};
             return StatusCode(500, result);
         }
     }
