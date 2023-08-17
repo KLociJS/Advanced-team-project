@@ -138,7 +138,11 @@ namespace EventureTest
             Assert.That("An error occured on the server", Is.EqualTo(exception!.Message));
         }
 
-        
+        [Test]
+        public void CalculateDistance_ValidInput_ReturnsCorrectDistance()
+        {
+            
+        }
 
 
         private void SeedDb()
