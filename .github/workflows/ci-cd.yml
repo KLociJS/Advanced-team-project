@@ -7,6 +7,12 @@ on:
     branches: [ loci-workflow ]
     
 jobs:
+  tests:
+    name: Unit Testing
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: dotnet test
   buildapi:
     name: Building api image
     runs-on: ubuntu-latest
