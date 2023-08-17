@@ -322,7 +322,7 @@ public class EventService : IEventService
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            throw new Exception("An error occured on the server.");
         }
         
     }

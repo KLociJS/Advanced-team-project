@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Eventure.Models;
@@ -144,12 +145,73 @@ namespace EventureTest
             
         }
 
+        [Test]
+        public async Task UpdateEvent_EventNotFound_ReturnsEventNotFoundResult()
+        {
+            var updateEventDto = new UpdateEventDto();
+            long id = 123456;
+            var userName = "";
+            
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+
+            var result = await _eventService.UpdateEvent(updateEventDto, id, userName);
+            var exceptedResult = UpdateEventResult.Fail();
+            
+            Assert.IsInstanceOf<UpdateEventResult>(result);
+            Assert.That(result.Succeeded, Is.EqualTo(exceptedResult.Succeeded));
+            Assert.That(result.Message, Is.EqualTo(exceptedResult.Message));
+        }
+
+        [Test]
+        public async Task UpdateEvent_EventUpdated_EventModifiedInDb()
+        {
+            var user = _context.Users.First();
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            var eventId = _context.Events.FirstOrDefault(e => e.EventName == "Concert: Rock Legends")!.Id;
+            var updateEventDto = new UpdateEventDto()
+            {
+                EventName = "Concert: Rock Legends",
+                Category = "Concert",
+                Location = "Budapest",
+                Description = "A rocking concert featuring legendary rock band.",
+                StartingDate = new DateTime(2023, 08, 24, 18, 00, 00).ToUniversalTime().ToString(CultureInfo.CurrentCulture),
+                EndingDate = new DateTime(2023, 08, 24, 22, 00, 00).ToUniversalTime().ToString(CultureInfo.CurrentCulture),
+                HeadCount = 3,
+                Price = 30000,
+                RecommendedAge = 18
+            };
+
+            var result = await _eventService.UpdateEvent(updateEventDto, eventId, user.Name);
+            var updatedEvent = _context.Events.FirstOrDefault(e => e.EventName == "Concert: Rock Legends");
+            
+            Assert.IsInstanceOf<UpdateEventResult>(result);
+            Assert.That(updatedEvent!.Description, Is.EqualTo("A rocking concert featuring legendary rock band."));
+        }
+
+        [Test]
+        public async Task UpdateEvent_ServerError_ThrowsException()
+        {
+            var updateEventDto = new UpdateEventDto();
+            long id = 123456;
+            var userName = "";
+            
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+
+            var exception = Assert.ThrowsAsync<Exception>(async () =>
+                await _eventService.UpdateEvent(updateEventDto, id, userName));
+            
+            Assert.That(exception!.Message, Is.EqualTo("An error occured on the server."));
+        }
+
 
         private void SeedDb()
         {
             var fileNameLocation = "hu.csv";
             var fileNameCategory = "Category.csv";
-            var user = new User(){Id = Guid.NewGuid().ToString()};
+            var user = new User(){Id = "123", Name = "Bela" };
             
             var locations = Location.LoadLocationsFromCsv(fileNameLocation);
             var categories = Category.LoadCategoriesFromCsv(fileNameCategory);
@@ -304,6 +366,7 @@ namespace EventureTest
                 
             };
 
+            _context.Add(user);
             _context.Categories.AddRange(categories);
             _context.Locations.AddRange(locations);
             _context.Events.AddRange(events);
