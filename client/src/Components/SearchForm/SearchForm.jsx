@@ -90,7 +90,7 @@ export default function SearchForm({isOpen, setIsOpen, url, setEvents, searchTyp
             <DateInput label='Starting Date' dateValue={startDate} setDateValue={setStartDate} time={startTime} setTime={setStartTime}/>
             <DateInput label='Ending Date' dateValue={endDate} setDateValue={setEndDate} time={endTime} setTime={setEndTime}/>
             <div className='flex-container mb-1'>
-                <Input label='Min Price' type='number' inputValue={minPrice} setInputValue={setMinPrice} />
+                <Input label='Min Price' type='number' min="1" placeholder="0" inputValue={minPrice} setInputValue={setMinPrice} />
                 <Input label='Max Price' type='number' inputValue={maxPrice} setInputValue={setMaxPrice} />
             </div>
             <PrimaryButton text='Search' clickHandler={handleSearchSubmit}/>
