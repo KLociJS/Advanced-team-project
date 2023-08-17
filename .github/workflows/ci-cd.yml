@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: dotnet test
+        working-directory: ./Server/Eventure/EventureTest
   buildapi:
     name: Building api image
     runs-on: ubuntu-latest
