@@ -232,7 +232,7 @@ public class EventService : IEventService
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            throw new Exception("An error occurred on the server");
         }
     }
 
@@ -243,8 +243,7 @@ public class EventService : IEventService
             var eventToLeave = await _context.Events
                 .Include(e=> e.Participants)
                 .FirstOrDefaultAsync(e => e.Id == id);
-            var userToLeave = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserName == username);
+            var userToLeave = await _userManager.FindByNameAsync(username);
 
             if (eventToLeave == null)
             {
@@ -265,9 +264,9 @@ public class EventService : IEventService
             await _context.SaveChangesAsync();
             return LeaveEventResult.Success();
         }
-        catch
+        catch (Exception e)
         {
-            return LeaveEventResult.ServerError();
+            throw new Exception("Couldn't leave event due to server error.");
         }
     }
 
