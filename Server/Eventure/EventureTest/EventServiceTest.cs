@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Eventure.Models;
 using Eventure.Models.Entities;
+using Eventure.Models.Enums;
 using Eventure.Models.RequestDto;
 using Eventure.Models.Results;
 using Eventure.Services;
@@ -29,9 +30,10 @@ namespace EventureTest
         public void Setup()
         {
             _mockUserStore = new Mock<IUserStore<User>>();
-            _mockUserManager = new Mock<UserManager<User>>(_mockUserStore.Object,null,null,null,null,null,null,null,null);
+            _mockUserManager =
+                new Mock<UserManager<User>>(_mockUserStore.Object, null, null, null, null, null, null, null, null);
             _dbContextOptions = new DbContextOptionsBuilder<EventureContext>()
-                .UseInMemoryDatabase(databaseName:"Eventureone")
+                .UseInMemoryDatabase(databaseName: "Eventureone")
                 .Options;
             _context = new EventureContext(_dbContextOptions);
             _context.Database.EnsureCreated();
@@ -45,31 +47,31 @@ namespace EventureTest
         {
             _context.Database.EnsureDeleted();
         }
-        
+
 
         [Test]
         public async Task CreateEventAsync_LocationNotFound_ReturnsFailedEventActionResult()
         {
             _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
-            
+
             var createEventDto = new CreateEventDto
             {
-                
+
             };
 
             var location = _context.Locations.First();
-            
+
             _context.Locations.RemoveRange(_context.Locations);
             _context.SaveChanges();
             var result = await _eventService.CreateEventAsync(createEventDto, "");
             var exceptedResult = EventActionResult.Failed("Couldn't find location.");
-            
-            
+
+
             Assert.NotNull(location);
             Assert.IsInstanceOf<EventActionResult>(result);
             Assert.That(result.Succeeded, Is.EqualTo(exceptedResult.Succeeded));
-            Assert.That(result.Response.Message,Is.EqualTo(exceptedResult.Response.Message));
+            Assert.That(result.Response.Message, Is.EqualTo(exceptedResult.Response.Message));
         }
 
         [Test]
@@ -77,10 +79,10 @@ namespace EventureTest
         {
             _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
-            
+
             var createEventDto = new CreateEventDto
             {
-                Location =  "Budapest"
+                Location = "Budapest"
             };
 
             var location = _context.Locations.First();
@@ -88,21 +90,21 @@ namespace EventureTest
             _context.SaveChanges();
             var result = await _eventService.CreateEventAsync(createEventDto, "");
             var exceptedResult = EventActionResult.Failed("Couldn't find category.");
-            
+
             Assert.NotNull(location);
             Assert.IsInstanceOf<EventActionResult>(result);
             Assert.That(result.Succeeded, Is.EqualTo(exceptedResult.Succeeded));
-            Assert.That(result.Response.Message,Is.EqualTo(exceptedResult.Response.Message));
+            Assert.That(result.Response.Message, Is.EqualTo(exceptedResult.Response.Message));
 
-            
+
         }
 
         [Test]
         public async Task CreateEventAsync_EventCreated_EventPresentInDatabase()
         {
             _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new User(){Id = "1"});
-            
+                .ReturnsAsync(new User() { Id = "1" });
+
             var createEventDto = new CreateEventDto
             {
                 EventName = "Test Event",
@@ -115,16 +117,16 @@ namespace EventureTest
                 Location = "Budapest",
                 Category = "Concert"
             };
-            
+
             var result = await _eventService.CreateEventAsync(createEventDto, "");
-            var createdEvent = _context.Events.FirstOrDefault(e =>e.CreatorId == "1" );
+            var createdEvent = _context.Events.FirstOrDefault(e => e.CreatorId == "1");
             var exceptedResult = EventActionResult.Succeed("Event created");
 
-            
+
             Assert.NotNull(createdEvent);
             Assert.IsInstanceOf<EventActionResult>(result);
             Assert.That(result.Succeeded, Is.EqualTo(exceptedResult.Succeeded));
-            Assert.That(result.Response.Message,Is.EqualTo(exceptedResult.Response.Message));
+            Assert.That(result.Response.Message, Is.EqualTo(exceptedResult.Response.Message));
 
         }
 
@@ -134,22 +136,77 @@ namespace EventureTest
             _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(new Exception());
 
-            var exception = Assert.ThrowsAsync<Exception>(async () => await _eventService.CreateEventAsync(new CreateEventDto(), ""));
+            var exception = Assert.ThrowsAsync<Exception>(async () =>
+                await _eventService.CreateEventAsync(new CreateEventDto(), ""));
             Assert.That("An error occured on the server", Is.EqualTo(exception!.Message));
         }
 
         [Test]
         public void CalculateDistance_ValidInput_ReturnsCorrectDistance()
         {
+
+        }
+
+        [Test]
+        public async Task JoinEvent_EventNotFound_ReturnsEventNotFound()
+        {
+            var notExistingeventId = -1;
+            var username = _context.Users.FirstOrDefault()!.UserName;
+
+            var result = await _eventService.JoinEvent(notExistingeventId, username);
+            
+            Assert.IsTrue(result.Error == ErrorType.EventNotFound);
+        }
+
+        [Test]
+        public async Task JoinEvent_UserNotFound_ReturnsUserNotFound()
+        {
+            var eventToJoin = _context.Events.FirstOrDefault(e => e.EventName == "Concert: Rock Legends")!.Id;
+            var username = "username";
+            
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))!
+                .ReturnsAsync((User)null!);
+
+            var result = await _eventService.JoinEvent(eventToJoin, username);
+            
+            Assert.IsTrue(result.Error == ErrorType.UserNotFound);
+        }
+    [Test]
+        public async Task JoinEvent_EventAndUserExist_ReturnsSuccess()
+        {
+            //Arrange
+            var eventIdJoin = _context.Events.FirstOrDefault(e => e.EventName == "Concert: Rock Legends" )!.Id;
+            var user = _context.Users.FirstOrDefault();
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user!);
+            
+            //Act
+            var result = await _eventService.JoinEvent(eventIdJoin, user!.UserName);
+            
+            //Assert
+            Assert.IsTrue(result.Succeeded);
+            Assert.That(result.Message, Is.EqualTo("Joined event."));
             
         }
 
+        [Test]
+        public async Task JoinEvent_ExceptionThrown_ReturnsInternalServerError()
+        {
+            var eventIdJoin = _context.Events.FirstOrDefault(e => e.EventName == "Concert: Rock Legends" )!.Id;
+            var user = _context.Users.FirstOrDefault();
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+
+            
+            var exception = Assert.ThrowsAsync<Exception>(async () => await _eventService.JoinEvent(eventIdJoin, user!.UserName));
+            Assert.That(exception!.Message, Is.EqualTo("An error occured on the server"));
+        }
 
         private void SeedDb()
         {
             var fileNameLocation = "hu.csv";
             var fileNameCategory = "Category.csv";
-            var user = new User(){Id = Guid.NewGuid().ToString()};
+            var user = new User(){Id = "123", UserName = "Bela"};
             
             var locations = Location.LoadLocationsFromCsv(fileNameLocation);
             var categories = Category.LoadCategoriesFromCsv(fileNameCategory);
@@ -303,7 +360,7 @@ namespace EventureTest
                 },
                 
             };
-
+            _context.Users.Add(user);
             _context.Categories.AddRange(categories);
             _context.Locations.AddRange(locations);
             _context.Events.AddRange(events);
