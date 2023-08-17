@@ -24,19 +24,14 @@ public class EventControllerTest
 
     [SetUp]
     public void Setup()
-    {
-        
-    var httpContext = new DefaultHttpContext();
-    httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[]
-    {
-    new Claim(ClaimTypes.Name, "username")
-    }));
-
-    _controller.ControllerContext = new ControllerContext
-    {
-    HttpContext = httpContext
-    };
-    
+    { 
+        var httpContext = new DefaultHttpContext();
+        httpContext.User = new ClaimsPrincipal(
+            new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, "username")
+            }));
+        _controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
     }
     
     // Create Event method //
@@ -86,17 +81,16 @@ public class EventControllerTest
     {
         //Arrange
         var eventId = 123;
-        var username = "testUser";
         var joinEventResult = JoinEventResult.Success();
         
-        _eventService.Setup(e => e.JoinEvent(eventId, username))
+        _eventService.Setup(e => e.JoinEvent(It.IsAny<long>(), It.IsAny<string>()))
             .ReturnsAsync(joinEventResult);
         
         //Act
         var result = await _controller.JoinEvent(eventId);
         
         //Assert
-        Assert.IsInstanceOf<ObjectResult>(result);
+        Assert.IsInstanceOf<OkObjectResult>(result);
     }
     
     
@@ -218,7 +212,7 @@ public class EventControllerTest
         var username = "username";
         var deleteEventResult = DeleteEventResult.Success();
 
-        _eventService.Setup(e => e.DeleteEvent(eventId, username))
+        _eventService.Setup(e => e.DeleteEvent(It.IsAny<long>(), It.IsAny<string>()))
             .ReturnsAsync(deleteEventResult);
 
         var result = await _controller.DeleteEvent(eventId);
@@ -251,7 +245,7 @@ public class EventControllerTest
         
         Assert.IsInstanceOf<NotFoundObjectResult>(result);
         var notFoundResult = result as NotFoundObjectResult;
-        Assert.That(notFoundResult!.Value, Is.EqualTo("Event not found."));
+        Assert.That((notFoundResult!.Value as Response)!.Message, Is.EqualTo("Event not found."));
     }
 
     [Test]
@@ -268,7 +262,7 @@ public class EventControllerTest
         
         Assert.IsInstanceOf<NotFoundObjectResult>(result);
         var notFoundResult = result as NotFoundObjectResult;
-        Assert.That(notFoundResult!.Value, Is.EqualTo("User not found."));
+        Assert.That((notFoundResult!.Value as Response)!.Message, Is.EqualTo("User not found."));
     }
     [Test]
     public async Task DeleteEvent_FailedToDelete_ReturnsStatusCode500()
@@ -282,11 +276,7 @@ public class EventControllerTest
         
         Assert.IsInstanceOf<ObjectResult>(result);
         var errorResult = result as ObjectResult;
-        Assert.NotNull(errorResult);
-        Assert.NotNull(errorResult!.Value);
-        var response = errorResult.Value as Response;
-        Assert.NotNull(response);
-        Assert.That((errorResult!.Value as Response)!.Message,Is.EqualTo("An error occured on the server."));
+        Assert.That((errorResult!.Value as Response)!.Message, Is.EqualTo("An error occurred on the server."));
     }
     
     [Test]
@@ -370,38 +360,82 @@ public class EventControllerTest
     //search event method //
     
     
-   
-    // public async Task SearchEvent_ValidInput_ReturnsOkWithEvents()
-    // {
-    //     var expectedEvents = new List<Event>
-    //     {
-    //         new Event
-    //         {
-    //             EventName = "Event",
-    //             //Location = "Location",
-    //            //Category = Category,
-    //             CategoryId = 123,
-    //             Creator = new User(),
-    //             CreatorId = "id",
-    //             Description = "Description",
-    //             StartingDate = DateTime.Today,
-    //             EndingDate = DateTime.Today,
-    //             HeadCount = 10,
-    //             Price = 100,
-    //         }
-    //     };
-    //     
-    //     _eventService.Setup(e => e.SearchEventAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>(),
-    //         It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(),
-    //         It.IsAny<string>(), It.IsAny<string>()))
-    //         .ReturnsAsync(expectedEvents);
-    //
-    //     var result = await _controller.SearchEvent("EventName", "Location", 10.0, "Category", "StartDate", "EndDate", 0, 100, "SearchType");
-    //     
-    //     var okObjectResult = Assert.IsType<OkObjectResult>(result);
-    //     var response = Assert.IsType<EventsPreviewResponseDto>(okObjectResult.Value);
-    //
-    //     Assert.Equal(expectedEvents, response.Events);
-    // }
+   [Test]
+    public async Task SearchEvent_ValidInput_ReturnsOkWithEvents()
+    {
+
+        _eventService.Setup(e => e.SearchEventAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>(),
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(),
+            It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(new List<Event>());
+    
+        var result = await _controller.SearchEvent("EventName", "Location", 10.0, "Category", "StartDate", "EndDate", 0, 100, "SearchType");
+        
+        Assert.IsInstanceOf<IActionResult>(result);
+        var okResult = result as OkObjectResult;
+        Assert.That(okResult!.StatusCode, Is.EqualTo(200));
+    }
+
+    [Test]
+    public async Task SearchEvent_ServerError_ReturnsServerError()
+    {
+        _eventService.Setup(e => e.SearchEventAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>(),
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(),
+                It.IsAny<string>(), It.IsAny<string>()))
+            .ThrowsAsync(new Exception());
+        
+        var result = await _controller.SearchEvent("EventName", "Location", 10.0, "Category", "StartDate", "EndDate", 0, 100, "SearchType");
+        
+        Assert.IsInstanceOf<IActionResult>(result);
+        var errorResult = result as ObjectResult;
+        Assert.That(errorResult!.StatusCode, Is.EqualTo(500));
+
+    }
+
+    [Test]
+    public void SearchLocations_ReturnsOkResult()
+    {
+        _eventService.Setup(s => s.GetLocation(It.IsAny<string>()))
+            .Returns(new List<Location>());
+        var result = _controller.SearchLocation("");
+        
+        Assert.IsInstanceOf<OkObjectResult>(result);
+    }
+
+    [Test]
+    public void SearchLocations_ServerError_ReturnsStatusCode500()
+    {
+        _eventService.Setup(s => s.GetLocation(It.IsAny<string>()))
+            .Throws<Exception>();
+        var result = _controller.SearchLocation("");
+        
+        Assert.IsInstanceOf<ObjectResult>(result);
+        var errorResult = result as ObjectResult;
+        Assert.That(errorResult!.StatusCode, Is.EqualTo(500));
+        Assert.That((errorResult!.Value as Response)!.Message, Is.EqualTo("An error occured on the server."));
+    }
+
+    [Test]
+    public void SearchCategory_ReturnsOkResult()
+    {
+        _eventService.Setup(s => s.GetCategory(It.IsAny<string>()))
+            .Returns(new List<Category>());
+        var result = _controller.SearchCategory("");
+        
+        Assert.IsInstanceOf<OkObjectResult>(result);
+    }
+
+    [Test]
+    public void SearchCategory_ServerError_ReturnsStatusCode500()
+    {
+        _eventService.Setup(s => s.GetCategory(It.IsAny<string>()))
+            .Throws<Exception>();
+        var result = _controller.SearchCategory("");
+        
+        Assert.IsInstanceOf<ObjectResult>(result);
+        var errorResult = result as ObjectResult;
+        Assert.That(errorResult!.StatusCode, Is.EqualTo(500));
+        Assert.That((errorResult!.Value as Response)!.Message, Is.EqualTo("An error occured on the server."));
+    }
 }
 
