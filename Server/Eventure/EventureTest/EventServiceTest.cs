@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Eventure.Models;
 using Eventure.Models.Entities;
+using Eventure.Models.Enums;
 using Eventure.Models.RequestDto;
 using Eventure.Models.Results;
 using Eventure.Services;
@@ -136,14 +137,156 @@ namespace EventureTest
                 .ThrowsAsync(new Exception());
 
             var exception = Assert.ThrowsAsync<Exception>(async () => await _eventService.CreateEventAsync(new CreateEventDto(), ""));
-            Assert.That("An error occured on the server", Is.EqualTo(exception!.Message));
+            Assert.That(exception!.Message, Is.EqualTo("An error occured on the server"));
         }
 
         [Test]
-        public void CalculateDistance_ValidInput_ReturnsCorrectDistance()
+        public async Task GetLocation_ValidLocationInput_ReturnLocation()
         {
-            
+            var location = "ürö";
+            var exceptResult = "Üröm";
+            var result = _eventService.GetLocation(location);
+            Assert.That(result[0].Name,Is.EqualTo(exceptResult));
+            Assert.That(result.Count(),Is.EqualTo(1));
         }
+        
+        [Test]
+        public async Task GetCategory_ValidLocationInput_ReturnCategory()
+        {
+            var category = "conf";
+            Assert.That(_eventService.GetCategory(category).Count(),Is.EqualTo(1));
+        }
+        
+        
+        [Test]
+        public async Task DeleteEvent_InvalidParameters_ReturnsServerError()
+        {
+
+            var result = await _eventService.DeleteEvent(-1, null);
+            Assert.IsTrue(result.Error == ErrorType.Server);
+          
+        }
+
+        [Test]
+        public async Task DeleteEvent_SuccessfulDeletion_ReturnsSuccessResult()
+        {
+            var user = _context.Users.First();
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            
+            
+            var eventToDelete = _context.Events.FirstOrDefault(e =>e.CreatorId == user.Id);
+            var userName = eventToDelete.Creator.UserName;
+            var eventId = eventToDelete.Id;
+            
+            var result = await _eventService.DeleteEvent(eventId, userName);
+            
+            Assert.IsTrue(result.Succeeded);
+
+        }
+
+        [Test]
+        public async Task DeleteEvent_EventNotFound_ReturnsEventNotFoundResult()
+        {
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            
+            var nonExistentEventId = 111111;
+            var userName = "fvsvfsbf";
+            
+            var result = await _eventService.DeleteEvent(nonExistentEventId, userName);
+            var exceptedResult = DeleteEventResult.EventNotFound();
+
+            Assert.That(result.Message, Is.EqualTo(exceptedResult.Message));
+        }
+        
+        [Test]
+        public async Task DeleteEvent_ServerError_ThrowNewException()
+        {
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+
+            var exception = Assert.ThrowsAsync<Exception>(async () => await _eventService.DeleteEvent(1, "bia"));
+            var exceptedException = "An error occurred on the server";
+            Assert.That(exception!.Message, Is.EqualTo(exceptedException));
+        }
+
+        [Test]
+        public async Task LeaveEvent_SuccessfulLeav_ReturnsSuccessResult()
+        {
+            var user = _context.Users.First();
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            var eventToLeave = _context.Events.FirstOrDefault(e => e.CreatorId == user.Id);
+            eventToLeave.Participants.Add(user);
+            var userToLeave = user;
+            _context.SaveChanges();
+            var result = await _eventService.LeaveEvent(eventToLeave.Id, user.UserName);
+            var eventWithoutBela = _context.Events.FirstOrDefault(e => e.CreatorId == user.Id);
+            
+            Assert.That(eventWithoutBela.Participants.Contains(user),Is.EqualTo(false));
+
+
+        }
+        
+        
+        [Test]
+        public async Task LeaveEvent_EventNotFound_ReturnsEventNotFoundResult()
+        {
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            
+            var nonExistentEventId = 111111;
+            var userName = "fvsvfsbf";
+            
+            var result = await _eventService.LeaveEvent(nonExistentEventId, userName);
+            var exceptedResult =LeaveEventResult.EventNotFound();
+
+            Assert.That(result.Message, Is.EqualTo(exceptedResult.Message));
+        }
+
+        [Test]
+        public async Task LeaveEvent_ParticipantsNotFound_ReturnsUserIsNotParticipantt()
+        {
+            var user = _context.Users.First();
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            var eventToLeave = _context.Events.FirstOrDefault(e => e.CreatorId == user.Id);
+            var result = await _eventService.LeaveEvent(eventToLeave.Id, user.UserName);
+            var exceptResult = LeaveEventResult.UserIsNotParticipant();
+            
+            Assert.That(result.Message, Is.EqualTo(exceptResult.Message));
+        }
+
+        
+        [Test]
+        public async Task LeaveEvent_UserNotFound_ReturnsUserNotFound()
+        {
+            var user = _context.Users.First();
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync((User)null!);
+            var eventToLeave = _context.Events.FirstOrDefault(e => e.CreatorId == user.Id);
+            var result = await _eventService.LeaveEvent(eventToLeave.Id, "Klara");
+            var exceptResult = LeaveEventResult.UserNotFound();
+            
+            Assert.That(result.Message, Is.EqualTo(exceptResult.Message));
+        }
+        
+        [Test]
+        public async Task LeaveEvent_ServerError_ReturnsServerError()
+        {
+            var user = _context.Users.First();
+            _mockUserManager.Setup(n => n.FindByNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+            var eventToLeave = _context.Events.FirstOrDefault(e => e.CreatorId == user.Id);
+            eventToLeave.Participants.Add(user);
+
+            var exception = Assert.ThrowsAsync<Exception>(async () =>
+                await _eventService.LeaveEvent(eventToLeave.Id, user.UserName));
+
+            Assert.That(exception.Message, Is.EqualTo("Couldn't leave event due to server error."));
+        }
+
 
         [Test]
         public async Task UpdateEvent_EventNotFound_ReturnsEventNotFoundResult()
@@ -269,7 +412,8 @@ namespace EventureTest
         {
             var fileNameLocation = "hu.csv";
             var fileNameCategory = "Category.csv";
-            var user = new User(){Id = "123", Name = "Bela" };
+
+            var user = new User(){Id = "123", UserName = "Bela"};
             
             var locations = Location.LoadLocationsFromCsv(fileNameLocation);
             var categories = Category.LoadCategoriesFromCsv(fileNameCategory);
@@ -428,6 +572,7 @@ namespace EventureTest
             _context.Categories.AddRange(categories);
             _context.Locations.AddRange(locations);
             _context.Events.AddRange(events);
+            _context.Users.Add(user);
             _context.SaveChanges();
         }
 
