@@ -21,10 +21,9 @@ public interface IEventService
         double? maxPrice,
         string searchType,
         string? userName);
-    Task<List<Event>> GetEventsAsync();
+
     List<Location> GetLocation(string location);
     List<Category> GetCategory(string category);
-    Task<GetEventResult> GetEventByIdAsync(long id);
-    Task<GetEventResult> GetRandomEvent();
+
     
 }

@@ -96,44 +96,7 @@ public class EventService : IEventService
             throw;
         }
     }
-    public async Task<GetEventResult> GetEventByIdAsync(long id)
-    {
-        try
-        {
-            var eventById = await _context.Events
-                .Include(e=>e.Category)
-                .Include(e=>e.Location)
-                .FirstOrDefaultAsync(e=>e.Id==id);
-            
-            if (eventById != null)
-            {
-                return GetEventResult.Succeed("Event found", eventById);
-            }
-            return GetEventResult.Failed("Event not found");
-            
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
-
-    public async Task<List<Event>> GetEventsAsync()
-    {
-        try
-        {
-            var events = _context.Events
-                .Include(e => e.Location)
-                .Include(e => e.Category);
-            return await events.ToListAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
+    
 
     public async Task<List<Event>> SearchEventAsync(
         string? eventName, 
@@ -241,28 +204,7 @@ public class EventService : IEventService
             throw;
         }
     }
-
-    public async Task<GetEventResult> GetRandomEvent()
-    {
-        try
-        {
-            var allEvents = await _context.Events.ToListAsync();
-            if (allEvents.Count == 0)
-            {
-                return GetEventResult.Failed("No event found");
-            }
-
-            Random random = new Random();
-            int randomIndex = random.Next(0, allEvents.Count);
-            var randomEvent = allEvents[randomIndex];
-            return GetEventResult.Succeed("Random event found", randomEvent);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
+    
 
     public async Task<DeleteEventResult> DeleteEvent(long eventId, string userName)
     {
@@ -401,7 +343,8 @@ public class EventService : IEventService
     {
         return degrees * Math.PI / 180.0;
     }
-    public static double CalculateDistance(Location originLocation, Location goodLocation)
+
+    private static double CalculateDistance(Location originLocation, Location goodLocation)
     {
         double lat1 = originLocation.Latitude;
         double lat2 = goodLocation.Latitude;
