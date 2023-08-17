@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Eventure.Models;
@@ -287,11 +288,131 @@ namespace EventureTest
         }
 
 
+        [Test]
+        public async Task UpdateEvent_EventNotFound_ReturnsEventNotFoundResult()
+        {
+            var updateEventDto = new UpdateEventDto();
+            long id = 123456;
+            var userName = "";
+            
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+
+            var result = await _eventService.UpdateEvent(updateEventDto, id, userName);
+            var exceptedResult = UpdateEventResult.Fail();
+            
+            Assert.IsInstanceOf<UpdateEventResult>(result);
+            Assert.That(result.Succeeded, Is.EqualTo(exceptedResult.Succeeded));
+            Assert.That(result.Message, Is.EqualTo(exceptedResult.Message));
+        }
+
+        [Test]
+        public async Task UpdateEvent_EventUpdated_EventModifiedInDb()
+        {
+            var user = _context.Users.First();
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            var eventId = _context.Events.FirstOrDefault(e => e.EventName == "Concert: Rock Legends")!.Id;
+            var updateEventDto = new UpdateEventDto()
+            {
+                EventName = "Concert: Rock Legends",
+                Category = "Concert",
+                Location = "Budapest",
+                Description = "A rocking concert featuring legendary rock band.",
+                StartingDate = new DateTime(2023, 08, 24, 18, 00, 00).ToUniversalTime().ToString(CultureInfo.CurrentCulture),
+                EndingDate = new DateTime(2023, 08, 24, 22, 00, 00).ToUniversalTime().ToString(CultureInfo.CurrentCulture),
+                HeadCount = 3,
+                Price = 30000,
+                RecommendedAge = 18
+            };
+
+            var result = await _eventService.UpdateEvent(updateEventDto, eventId, user.Name);
+            var updatedEvent = _context.Events.FirstOrDefault(e => e.EventName == "Concert: Rock Legends");
+            
+            Assert.IsInstanceOf<UpdateEventResult>(result);
+            Assert.That(updatedEvent!.Description, Is.EqualTo("A rocking concert featuring legendary rock band."));
+        }
+
+        [Test]
+        public async Task UpdateEvent_ServerError_ThrowsException()
+        {
+            var updateEventDto = new UpdateEventDto();
+            long id = 123456;
+            var userName = "";
+            
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+
+            var exception = Assert.ThrowsAsync<Exception>(async () =>
+                await _eventService.UpdateEvent(updateEventDto, id, userName));
+            
+            Assert.That(exception!.Message, Is.EqualTo("An error occured on the server."));
+        }
+
+        [Test]
+        public async Task SearchEvents_SearchTypeAllWithoutUser_ReturnsAllEvents()
+        {
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))!
+                .ReturnsAsync(new User());
+
+            var events =
+                await _eventService.SearchEventAsync(null, null, null, null, null, null, null, null, "all", null);
+
+            var eventsCount = _context.Events.Count();
+            
+            Assert.IsNotEmpty(events);
+            Assert.That(events.Count(), Is.EqualTo(eventsCount));
+        }
+
+        [Test]
+        public async Task SearchEvents_FilterByLocationCategoryMinPriceMaxPrice_ReturnsEvent()
+        {
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))!
+                .ReturnsAsync(new User());
+            
+            var events =
+                await _eventService.SearchEventAsync("Concert: Rock Legends", "Budapest", null, "Concert", null, null, 25000, 35000, "all", null);
+
+            var eventsCount = _context.Events
+                .Count(e => e.Location.Name == "Budapest" && e.Category.Name == "Concert" && e.Price >= 25000 &&
+                            e.Price <= 35000);
+            Assert.IsNotEmpty(events);
+            Assert.That(events.Count(), Is.EqualTo(eventsCount));
+        }
+
+        [Test]
+        public async Task SearchEvents_FilterByLocationDistanceDate_ReturnsEvent()
+        {
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))!
+                .ReturnsAsync(new User());
+            
+            var events =
+                await _eventService.SearchEventAsync(null, "Budapest", 50, null, new DateTime(2023, 08, 24, 00, 00, 00).ToUniversalTime().ToString(CultureInfo.CurrentCulture), new DateTime(2023, 08, 26, 18, 00, 00).ToUniversalTime().ToString(CultureInfo.CurrentCulture), null, null, "all", null);
+
+            
+            Assert.IsNotEmpty(events);
+            Assert.That(events.Count(), Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task SearchEvents_ServerError_ThrowsError()
+        {
+            _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+
+            var exception = Assert.ThrowsAsync<Exception>(async () =>
+                await _eventService.SearchEventAsync(null, "Budapest", null, "Concert", null, null, 25000, 35000, "all",
+                    "Bela"));
+            
+            Assert.That(exception!.Message, Is.EqualTo("An error occured on the server."));
+        }
+
 
         private void SeedDb()
         {
             var fileNameLocation = "hu.csv";
             var fileNameCategory = "Category.csv";
+
             var user = new User(){Id = "123", UserName = "Bela"};
             
             var locations = Location.LoadLocationsFromCsv(fileNameLocation);
@@ -447,6 +568,7 @@ namespace EventureTest
                 
             };
 
+            _context.Users.Add(user);
             _context.Categories.AddRange(categories);
             _context.Locations.AddRange(locations);
             _context.Events.AddRange(events);
