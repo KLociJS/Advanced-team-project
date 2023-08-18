@@ -8,10 +8,10 @@ export default function Events() {
 
   const [events, setEvents] = useState([])
 
-  const searchUrl = 'https://localhost:7019/EventEndpoints/search'
+  const searchUrl = 'http://localhost:5000/EventEndpoints/search'
 
   useEffect(()=>{
-    fetch('http://localhost:5000/EventEndpoints')
+    fetch('http://localhost:5000/EventEndpoints/search?searchType=all')
     .then(res=>res.json())
     .then(data=>{
       console.log(data.events);

@@ -38,7 +38,7 @@ export default function Signup() {
       email,
       password
     };
-    fetch('https://localhost:7019/api/signup', {
+    fetch('http://localhost:5000/api/signup', {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

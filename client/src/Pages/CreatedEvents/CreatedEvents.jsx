@@ -10,10 +10,10 @@ export default function CreatedEvents() {
 
   const [events, setEvents] = useState([])
 
-  const searchUrl = 'https://localhost:7019/EventEndpoints/search'
+  const searchUrl = 'http://localhost:5000/EventEndpoints/search'
 
   useEffect(()=>{
-    fetch('https://localhost:7019/EventEndpoints/search?searchType=created',{credentials:'include'})
+    fetch('http://localhost:5000/EventEndpoints/search?searchType=created',{credentials:'include'})
     .then(res=>res.json())
     .then(data=>{
       console.log(data.events);

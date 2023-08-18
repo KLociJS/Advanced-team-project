@@ -5,7 +5,7 @@ export default function LeaveButton({eventId, setEvents}) {
     console.log(eventId)
 
     const eventLeaveHandler = (id) => {
-        fetch(`https://localhost:7019/EventEndpoints/leave-event/${id}`,{
+        fetch(`http://localhost:5000/EventEndpoints/leave-event/${id}`,{
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'

@@ -1,10 +1,8 @@
 import PrimaryButton from '../../../Components/Button/PrimaryButton'
 
 export default function DeleteButton({eventId, setEvents}) {
-    console.log(eventId)
-
     const eventDeleteHandler = (id) => {
-        fetch(`https://localhost:7019/EventEndpoints/delete-event/${id}`, {
+        fetch(`http://localhost:5000/EventEndpoints/delete-event/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

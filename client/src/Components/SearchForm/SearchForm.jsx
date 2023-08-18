@@ -13,8 +13,8 @@ import {
 
 export default function SearchForm({isOpen, setIsOpen, url, setEvents, searchType}) {
 
-    const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
-    const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
+    const locationsUrl = "http://localhost:5000/EventEndpoints/location?location="
+    const categoriesUrl = "http://localhost:5000/EventEndpoints/category?category="
 
     const [eventName, setEventName] = useState('')
     const [location, setLocation] = useState('')

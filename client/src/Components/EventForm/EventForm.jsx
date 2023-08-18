@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function EventForm({url,navigateTo,buttonText,event, method}) {
-    const locationsUrl = "https://localhost:7019/EventEndpoints/location?location="
-    const categoriesUrl = "https://localhost:7019/EventEndpoints/category?category="
+    const locationsUrl = "http://localhost:5000/EventEndpoints/location?location="
+    const categoriesUrl = "http://localhost:5000/EventEndpoints/category?category="
   
     const navigate = useNavigate()
   

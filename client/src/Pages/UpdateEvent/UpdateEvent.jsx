@@ -7,10 +7,10 @@ export default function UpdateEvent() {
     const [isLoading,setIsLoading] = useState(true)
     const { id } = useParams()
 
-    const postUrl = `https://localhost:7019/EventEndpoints${event ? `/${event.id}` : ''}`
+    const postUrl = `http://localhost:5000/EventEndpoints${event ? `/${event.id}` : ''}`
 
     useEffect(()=>{
-        fetch(`https://localhost:7019/EventEndpoints/${id}`)
+        fetch(`http://localhost:5000/EventEndpoints/${id}`)
         .then(res=>res.json())
         .then(data=>{
             console.log(data)
