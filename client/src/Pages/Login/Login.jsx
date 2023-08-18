@@ -19,7 +19,7 @@ export default function Login() {
       password
     };
 
-    fetch('https://localhost:7019/api/login', {
+    fetch('http://localhost:5000/api/login', {
       method: "POST",
       credentials: "include",
       headers: {

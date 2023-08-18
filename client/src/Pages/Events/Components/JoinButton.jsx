@@ -6,7 +6,7 @@ export default function JoinButton({eventId, setEvents}) {
     const { user } = useAuth()
 
     const eventJoinHandler = (id) => {
-        fetch(`https://localhost:7019/EventEndpoints/join-event/${id}`,{
+        fetch(`http://localhost:5000/EventEndpoints/join-event/${id}`,{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

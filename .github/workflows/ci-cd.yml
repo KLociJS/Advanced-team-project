@@ -2,14 +2,24 @@ name: Eventure CI/CD
 
 on:
   push:
-    branches: [ loci-workflow ]
+    branches: [ main ]
   pull_request:
-    branches: [ loci-workflow ]
+    branches: [ main ]
     
 jobs:
+  tests:
+    name: Api unit test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: dotnet test
+        working-directory: ./Server/Eventure/EventureTest
   buildapi:
-    name: Building api image
+    name: Build and push api image
     runs-on: ubuntu-latest
+    
+    needs: [tests]
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -32,7 +42,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/eventureapi:latest
   buildui:
-    name: Building ui image
+    name: Build and push ui image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
